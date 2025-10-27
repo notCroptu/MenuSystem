@@ -1,0 +1,24 @@
+{
+  "name": "com.noottu.menu-system",
+  "version": "1.2.3",
+  "displayName": "MenuSystem",
+  "description": "A package including main, pause and settings menus scripts, with a scene loader and basic sound system.",
+  "unity": "6000.2",
+  "unityRelease": "6f2",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6",
+    "com.unity.render-pipelines.universal": "17.2.0"
+  },
+  "keywords": [
+    "menu",
+    "menus"
+  ],
+  "author": {
+    "name": "noottu",
+    "email": "mariana.martins.info@gmail.com",
+    "url": "https://noottu.itch.io/"
+  }
+}
