@@ -5,12 +5,12 @@ using UnityEngine;
 /// </summary>
 public class PauseInput : MonoBehaviour
 {
-    private Pause _pause;
+    private PauseMenu _pause;
 
     private void FindPause()
     {
         if (_pause == null)
-            _pause = FindFirstObjectByType<Pause>();
+            _pause = FindFirstObjectByType<PauseMenu>();
     }
 
     private void OnEnable()
