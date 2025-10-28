@@ -30,7 +30,7 @@ public abstract class Menu : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if (ActiveUICam.ActiveUICamera != null)
+        if (ActiveUICam.ActiveUICamera != null) // if an active UI cam exists, then set it as the focus, with screen space as camera so the ui receives post processing
         {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = ActiveUICam.ActiveUICamera;

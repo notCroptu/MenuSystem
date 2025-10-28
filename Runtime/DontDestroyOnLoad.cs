@@ -2,7 +2,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Keeps persistent game objects like managers between scenes, all are destroyed by pause when loading main.
+/// Keeps persistent game objects like managers between scenes. They are all destroyed by pause menu when loading main.
 /// </summary>
 public class DontDestroyOnLoad : MonoBehaviour
 {

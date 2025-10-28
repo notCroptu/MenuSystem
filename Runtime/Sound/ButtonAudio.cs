@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// Component must be in same game object as ui object to use hover sound
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class ButtonAudio : Audio, IPointerEnterHandler, IPointerExitHandler
+public class ButtonAudio : Audio, IPointerEnterHandler, IPointerExitHandler // TODO: A script like button audio that is used like raycasts instead for objects (maybe not needed because sound effect can be used in conjunction with custom interaction scripts to achieve that)
 {
     [SerializeField] private Button _button;
     [SerializeField] private AudioClip _press;

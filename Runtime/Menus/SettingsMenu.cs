@@ -6,13 +6,10 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ) with Pause Menu.
-/// </summary>
 public class SettingsMenu : Menu
 {
     [Header("Settings")]
-    [InfoBox("The settings game object must not be the same as the setting script's. ")]
+    [InfoBox("The settings game object must not be the same as the setting script's. \n Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
     [SerializeField] private GameObject _settingsObject;
 
     [Header("Brightness")]
@@ -31,6 +28,11 @@ public class SettingsMenu : Menu
     [SerializeField] private Slider _musicVolume;
     [SerializeField] private TMP_Text _musicVolumeText;
     private Music _music;
+
+    // TODO: sound effect volume
+    // I think i can change music and sound effect change the volumes of a music and a sfx volume thingie on the volume mixer and therefore evading statics and findfirstof
+
+    // TODO: mouse sensitivity
 
     private void Awake()
     {
