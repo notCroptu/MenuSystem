@@ -5,8 +5,24 @@ using UnityEngine.SceneManagement;
 public class Pause : Menu
 {
     [Header("Pause")]
-    [InfoBox("The pause game object must not be the same as the pause script's. ")]
+    [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. ")]
     [SerializeField] private GameObject _pause;
+    [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
+
+    // It's to check if the game is paused to stop other behaviors, mostly stopping the player from being able to use inputs and enumerators (they continue running despite of time scale changes.)
+    public bool Paused => Count != 0;
+
+    // Some interactions require pausing despite no pause stack, later add a paused bool check
+    public int _pauseCount = 0;
+    public int Count
+    {
+        get { return _pauseCount; }
+        set
+        {
+            Debug.Log("Pause count changing to: " + value);
+            _pauseCount = value;
+        }
+    }
 
     private void Start()
     {
@@ -14,22 +30,21 @@ public class Pause : Menu
     }
 
     /// <summary>
-    /// Runs on late update incase any inputs with the same keys are ran at the same time.
+    /// Runs on late update in case any inputs with the same keys are ran at the same time.
     /// </summary>
     private void LateUpdate()
     {
-        if (  SceneManager.GetActiveScene().name != _mainMenu && InputManager.Pause() )
+        if (SceneManager.GetActiveScene().name != _mainMenu && Input.GetKeyDown(KeyCode.Escape)) // need to change hard coded escape key to a chose yourself at the top.
         {
-            if ( _pause.activeSelf )
+            if (_pause.activeSelf)
                 Continue();
             else
             {
-                _pause.SetActive( true );
-                Time.timeScale = 0f;
-                // InputManager.Paused = true;
+                _pause.SetActive(true);
+                Time.timeScale *= _timeScaleMultiplier; // we only stop timescale on pause menu because for interactions like reading a book for example, in game, still want the game to be running around them. 
+                Count++;
             }
         }
-        // Debug.Log("time scale?" + Time.timeScale);
     }
 
     /// <summary>
@@ -59,6 +74,8 @@ public class Pause : Menu
         _settings.Continue();
         _pause.SetActive(false);
 
+        Count--;
+
         // Debug.Log("unloading");
     }
 
@@ -81,6 +98,11 @@ public class Pause : Menu
     public void OnDestroy()
     {
         Debug.Log("Destroying pause");
-        Continue();        
+        Continue();
+    }
+    
+    private void OnApplicationQuit()
+    {
+        _pauseCount = 0;
     }
 }

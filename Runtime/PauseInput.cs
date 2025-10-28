@@ -5,24 +5,37 @@ using UnityEngine;
 /// </summary>
 public class PauseInput : MonoBehaviour
 {
+    private Pause _pause;
+
+    private void FindPause()
+    {
+        if (_pause == null)
+            _pause = FindFirstObjectByType<Pause>();
+    }
+
     private void OnEnable()
     {
-        InputManager.PauseCount++;
-        Debug.Log("Adding pause count: " + InputManager.PauseCount + " at GO: " + gameObject);
+        FindPause();
+
+        _pause.Count++;
+        Debug.Log("Adding pause count: " + _pause.Count + " at GO: " + gameObject);
     }
 
     private void OnDisable()
     {
-        InputManager.PauseCount--;
-        Debug.Log("disable removing pause count: " + InputManager.PauseCount + " at GO: " + gameObject);
+        FindPause();
+
+        _pause.Count--;
+        Debug.Log("disable removing pause count: " + _pause.Count + " at GO: " + gameObject);
     }
 
     private void OnDestroy()
     {
+        FindPause();
+
         if (gameObject != null && gameObject.activeSelf)
         {
-            // InputManager.PauseCount--;
-            Debug.Log("destroy removing pause count: " + InputManager.PauseCount + " at GO: " + gameObject);
+            Debug.Log("destroy removing pause count: " + _pause.Count + " at GO: " + gameObject);
         }
     }
 }

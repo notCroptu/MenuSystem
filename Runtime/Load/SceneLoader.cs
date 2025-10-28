@@ -21,14 +21,16 @@ public class SceneLoader : MonoBehaviour
 
     public static RestoreFlag CurrentRestoreFlag { get; private set; }
 
-    public static void Load(string scene, RestoreFlag restoreFlag = null )
+    private Pause _pause;
+
+    public static void Load(string scene, RestoreFlag restoreFlag = null)
     {
         Debug.Log("DESTROYED: Loading new");
         if (IsLoading) return;
         IsLoading = true;
 
         CurrentRestoreFlag = restoreFlag;
-        if ( CurrentRestoreFlag != null )
+        if (CurrentRestoreFlag != null)
             restoreFlag.IsRestored = false;
 
         SceneToLoad = scene;
@@ -41,7 +43,11 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator Start()
     {
         _sceneName.text = "Loading " + SceneToLoad + "...";
-        InputManager.PauseCount++;
+
+        if (_pause == null)
+            _pause = FindFirstObjectByType<Pause>();
+
+        _pause.Count++;
         // test SceneToLoad ??= "LoadScene";
 
         // wait prePostWaitTime before trying to load
@@ -120,7 +126,7 @@ public class SceneLoader : MonoBehaviour
 
         IsLoading = false;
         CurrentRestoreFlag = null;
-        InputManager.PauseCount--;
+        _pause.Count--;
         _sceneName.text = "";
     }
 }

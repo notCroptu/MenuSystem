@@ -1,1 +1,1 @@
-This package does not contains third-party software.
+This package does not contain third-party software.
