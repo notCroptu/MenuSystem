@@ -10,7 +10,7 @@ public class SettingsMenu : Menu
 {
     [Header("Settings")]
     [InfoBox("The settings game object must not be the same as the setting script's. \n Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
-    [SerializeField] private GameObject _settingsObject;
+    [SerializeField] private GameObject _settingsCanvas;
 
     [Header("Brightness")]
     [SerializeField] private Slider _brightness;
@@ -36,18 +36,32 @@ public class SettingsMenu : Menu
 
     private void Awake()
     {
-        volume.profile.TryGet(out _postExposure);
+        if (volume == null)
+            Debug.LogWarning(name + " volume reference missing, brightness adjustments disabled.");
+        else
+            volume.profile?.TryGet(out _postExposure);
 
-        _brightness?.onValueChanged.AddListener(ChangeBrightness);
-        _volume?.onValueChanged.AddListener(ChangeVolume);
-        _musicVolume?.onValueChanged.AddListener(ChangeMusicVolume);
+        if (_brightness == null)
+            Debug.LogWarning(name + " brightness slider not assigned.");
+        else
+            _brightness.onValueChanged.AddListener(ChangeBrightness);
+
+        if (_volume == null)
+            Debug.LogWarning(name + " general volume slider not assigned.");
+        else
+            _volume.onValueChanged.AddListener(ChangeVolume);
+
+        if (_musicVolume == null)
+            Debug.LogWarning(name + " music volume slider not assigned.");
+        else
+            _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
     }
 
     private void OnEnable()
     {
-        _volume.value = 1f;
-        _musicVolume.value = 1f;
-        _brightness.value = 0.5f;
+        if (_volume != null) _volume.value = 1f;
+        if (_musicVolume != null) _musicVolume.value = 1f;
+        if (_brightness != null) _brightness.value = 0.5f;
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -64,28 +78,30 @@ public class SettingsMenu : Menu
     }
     private void Start()
     {
-        ChangeBrightness(_brightness.value);
-        ChangeVolume(_volume.value);
-        ChangeMusicVolume(_musicVolume.value);
+        if (_brightness != null) ChangeBrightness(_brightness.value);
+        if (_volume != null) ChangeVolume(_volume.value);
+        if (_musicVolume != null) ChangeMusicVolume(_musicVolume.value);
 
         Continue();
     }
 
     public void TurnOnSettings()
     {
-        if ( _settingsObject != null )
-            _settingsObject.SetActive(true);
+        if (_settingsCanvas != null)
+            _settingsCanvas.SetActive(true);
+        else
+            Debug.LogWarning(name + " _settingsCanvas not assigned.");
     }
 
     public override void Continue()
     {
-        if ( _settingsObject != null )
-            _settingsObject.SetActive(false);
+        if ( _settingsCanvas != null )
+            _settingsCanvas.SetActive(false);
     }
 
     public void ChangeBrightness(float value)
     {
-        if ( _postExposure == null ) return;
+        if (_postExposure == null || _brightness == null) return;
         
         float final =  _clampBrightness * (value - _brightness.minValue)
             / (_brightness.maxValue - _brightness.minValue);
@@ -98,6 +114,8 @@ public class SettingsMenu : Menu
 
     public void ChangeVolume(float value)
     {
+        if (_volume == null) return;
+
         float final = _maxVolume * (value - _volume.minValue)
             / (_volume.maxValue - _volume.minValue);
 
@@ -108,6 +126,8 @@ public class SettingsMenu : Menu
     }
     public void ChangeMusicVolume(float value)
     {
+        if (_musicVolume == null) return;
+
         float final = _maxVolume * (value - _musicVolume.minValue)
             / (_musicVolume.maxValue - _musicVolume.minValue);
 
@@ -116,9 +136,10 @@ public class SettingsMenu : Menu
 
         if (_music != null)
             _music.Volume = final;
+        else
+            Debug.LogWarning(name + " music component not found in scene.");
         
-        if (_musicVolumeText != null)
-            _musicVolumeText.text = FormatShort(final);
+        _musicVolumeText?.SetText(FormatShort(final));
     }
 
     private string FormatShort(float value)
@@ -131,8 +152,8 @@ public class SettingsMenu : Menu
 
     public void OnDestroy()
     {
-        _brightness.onValueChanged.RemoveListener(ChangeBrightness);
-        _volume.onValueChanged.RemoveListener(ChangeVolume);
-        _musicVolume.onValueChanged.RemoveListener(ChangeMusicVolume);
+        _brightness?.onValueChanged.RemoveListener(ChangeBrightness);
+        _volume?.onValueChanged.RemoveListener(ChangeVolume);
+        _musicVolume?.onValueChanged.RemoveListener(ChangeMusicVolume);
     }
 }

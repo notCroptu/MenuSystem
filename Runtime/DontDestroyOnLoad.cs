@@ -19,6 +19,7 @@ public class DontDestroyOnLoad : MonoBehaviour
         }
         else
         {
+            Debug.LogWarning(name + " duplicate DDOL detected, destroying this instance: " + gameObject.name);
             Destroy(gameObject);
         }
     }
@@ -34,6 +35,7 @@ public class DontDestroyOnLoad : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        _instances.Clear();
+        if (_instances != null)
+            _instances.Clear();
     }
 }

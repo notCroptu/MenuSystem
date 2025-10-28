@@ -4,7 +4,7 @@ using UnityEngine;
 public class MainMenu : Menu
 {
     [Header("Main")]
-    [Scene][SerializeField] private string _game;
+    [Scene][SerializeField] private string _gameScene;
 
     /// <summary>
     /// Loads the previous game files and starts the game off from where the player left off.
@@ -29,6 +29,13 @@ public class MainMenu : Menu
     /// </summary>
     public void NewGame()
     {
-        SceneLoader.Load(_game);
+        if (string.IsNullOrEmpty(_gameScene))
+        {
+            Debug.LogWarning(name + " _game scene not assigned in MainMenu.");
+            return;
+        }
+
+
+        SceneLoader.Load(_gameScene);
     }
 }

@@ -12,10 +12,18 @@ public abstract class Menu : MonoBehaviour
     private void Awake()
     {
         if (canvas == null)
+        {
             canvas = GetComponent<Canvas>();
+            if (canvas == null)
+                Debug.LogWarning(name + " missing Canvas reference.");
+        }
+
         UpdateCamera();
 
         _settings = FindFirstObjectByType<SettingsMenu>();
+
+        if (_settings == null)
+            Debug.LogWarning(name + " could not find SettingsMenu in scene.");
     }
 
     private void OnEnable()
@@ -30,6 +38,8 @@ public abstract class Menu : MonoBehaviour
 
     private void UpdateCamera()
     {
+        if (canvas == null) return;
+
         if (ActiveUICam.ActiveUICamera != null) // if an active UI cam exists, then set it as the focus, with screen space as camera so the ui receives post processing
         {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -50,7 +60,7 @@ public abstract class Menu : MonoBehaviour
 
     private void Update()
     {
-        if (canvas.worldCamera == null)
+        if (canvas != null && canvas.worldCamera == null)
             UpdateCamera();
     }
 
@@ -61,7 +71,14 @@ public abstract class Menu : MonoBehaviour
     public void OpenSettings()
     {
         if (_settings == null)
+        {
             _settings = FindFirstObjectByType<SettingsMenu>();
+            if (_settings == null)
+            {
+                Debug.LogWarning(name + " could not open SettingsMenu no instance found.");
+                return;
+            }
+        }
 
         _settings.TurnOnSettings();
     }
@@ -75,7 +92,9 @@ public abstract class Menu : MonoBehaviour
 
         DontDestroyOnLoad[] ddols = FindObjectsByType<DontDestroyOnLoad>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (DontDestroyOnLoad ddol in ddols)
-            if (ddol != gameObject)
+        {
+            if (ddol != null && ddol.gameObject != gameObject)
                 Destroy(ddol.gameObject);
+        }
     }
 }

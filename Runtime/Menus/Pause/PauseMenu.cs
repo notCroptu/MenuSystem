@@ -6,26 +6,29 @@ public class PauseMenu : Menu
 {
     [Header("Pause")]
     [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. \n Pause menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
-    [SerializeField] private GameObject _pause;
+    [SerializeField] private GameObject _pauseCanvas;
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
     private float _previousTimeScale;
 
     // It's to check if the game is paused to stop other behaviors, mostly stopping the player from being able to use inputs and enumerators (they continue running despite of time scale changes.)
     public bool Paused => Count != 0;
-    public int _pauseCount = 0;
+    public int _pauseCanvasCount = 0;
     public int Count
     {
-        get { return _pauseCount; }
+        get { return _pauseCanvasCount; }
         set
         {
             Debug.Log("Pause count changing to: " + value);
-            _pauseCount = value;
+            _pauseCanvasCount = value;
         }
     }
 
     private void Start()
     {
-        _pause.SetActive(false);
+        if (_pauseCanvas == null)
+            Debug.LogWarning(name + " missing _pauseCanvas GameObject.");
+        else
+            _pauseCanvas.SetActive(false);
     }
 
     /// <summary>
@@ -33,9 +36,12 @@ public class PauseMenu : Menu
     /// </summary>
     private void LateUpdate()
     {
+        if (_pauseCanvas == null)
+            return;
+
         if (SceneManager.GetActiveScene().name != _mainMenu && Input.GetKeyDown(KeyCode.Escape)) // TODO: need to change hard coded escape key to a chose yourself at the top.
         {
-            if (_pause.activeSelf) // checking is pause object is active acts like a toggle.
+            if (_pauseCanvas.activeSelf) // checking is pause object is active acts like a toggle.
                 Continue();
             else
                 OpenPause();
@@ -60,7 +66,9 @@ public class PauseMenu : Menu
 
     public void OpenPause()
     {
-        _pause.SetActive(true);
+        if (_pauseCanvas == null) return;
+
+        _pauseCanvas.SetActive(true);
 
         if (_timeScaleMultiplier == 0f)
         {
@@ -80,8 +88,13 @@ public class PauseMenu : Menu
     /// </summary>
     public override void Continue()
     {
-        _settings.Continue();
-        _pause.SetActive(false);
+        if (_settings != null)
+            _settings.Continue();
+        else
+            Debug.LogWarning(name + " SettingsMenu reference missing in PauseMenu.");
+        
+        if (_pauseCanvas != null)
+            _pauseCanvas.SetActive(false);
 
         if (_timeScaleMultiplier == 0f)
         {
@@ -92,7 +105,7 @@ public class PauseMenu : Menu
             Time.timeScale /= _timeScaleMultiplier;
         }
 
-        Count--;
+        Count = Mathf.Max(0, Count - 1);
     }
 
     /// <summary>
@@ -114,10 +127,11 @@ public class PauseMenu : Menu
     private void OnDestroy()
     {
         Debug.Log("Destroying pause");
+        Count = 0;
     }
     
     private void OnApplicationQuit()
     {
-        _pauseCount = 0;
+        Count = 0;
     }
 }
