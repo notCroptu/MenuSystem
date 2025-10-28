@@ -4,7 +4,7 @@
   "displayName": "MenuSystem",
   "description": "A package including main, pause and settings menus scripts, with a scene loader and basic sound system.",
   "unity": "6000.2",
-  "unityRelease": "6f2",
+  "unityRelease": "",
   "documentationUrl": "",
   "changelogUrl": "",
   "licensesUrl": "",

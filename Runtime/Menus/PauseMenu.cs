@@ -2,7 +2,10 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Pause : Menu
+/// <summary>
+/// Pause menu needs to be contained in a DDOL object (don't destroy on load (new scene) ) with Settings Menu.
+/// </summary>
+public class PauseMenu : Menu
 {
     [Header("Pause")]
     [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. ")]
@@ -95,7 +98,7 @@ public class Pause : Menu
 
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         Debug.Log("Destroying pause");
         Continue();

@@ -1,7 +1,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-public class Main : Menu
+public class MainMenu : Menu
 {
     [Header("Main")]
     [Scene][SerializeField] private string _game;

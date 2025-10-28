@@ -6,8 +6,10 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
-public class Settings : Menu
+/// <summary>
+/// Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ) with Pause Menu.
+/// </summary>
+public class SettingsMenu : Menu
 {
     [Header("Settings")]
     [InfoBox("The settings game object must not be the same as the setting script's. ")]

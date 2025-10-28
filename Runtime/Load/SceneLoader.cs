@@ -21,7 +21,7 @@ public class SceneLoader : MonoBehaviour
 
     public static RestoreFlag CurrentRestoreFlag { get; private set; }
 
-    private Pause _pause;
+    private PauseMenu _pause;
 
     public static void Load(string scene, RestoreFlag restoreFlag = null)
     {
@@ -45,7 +45,7 @@ public class SceneLoader : MonoBehaviour
         _sceneName.text = "Loading " + SceneToLoad + "...";
 
         if (_pause == null)
-            _pause = FindFirstObjectByType<Pause>();
+            _pause = FindFirstObjectByType<PauseMenu>();
 
         _pause.Count++;
         // test SceneToLoad ??= "LoadScene";

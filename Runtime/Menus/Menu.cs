@@ -7,15 +7,15 @@ public abstract class Menu : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [Scene][SerializeField] protected string _mainMenu;
 
-    protected Settings _settings;
+    protected SettingsMenu _settings;
 
     private void Awake()
     {
-        if ( canvas == null )
+        if (canvas == null)
             canvas = GetComponent<Canvas>();
         UpdateCamera();
 
-        _settings = FindFirstObjectByType<Settings>();
+        _settings = FindFirstObjectByType<SettingsMenu>();
     }
 
     private void OnEnable()
@@ -60,9 +60,9 @@ public abstract class Menu : MonoBehaviour
     /// </summary>
     public void OpenSettings()
     {
-        if ( _settings == null )
-            _settings = FindFirstObjectByType<Settings>();
-            
+        if (_settings == null)
+            _settings = FindFirstObjectByType<SettingsMenu>();
+
         _settings.TurnOnSettings();
     }
 
@@ -74,7 +74,7 @@ public abstract class Menu : MonoBehaviour
         // Not deleting our own, ensures pause will not be deleted, keeping settings data during play
 
         DontDestroyOnLoad[] ddols = FindObjectsByType<DontDestroyOnLoad>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        foreach ( DontDestroyOnLoad ddol in ddols )
+        foreach (DontDestroyOnLoad ddol in ddols)
             if (ddol != gameObject)
                 Destroy(ddol.gameObject);
     }
