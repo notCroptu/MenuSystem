@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 /// <summary>
 /// Scene loader must be in a dedicated scene where the load progress will be shown.
@@ -27,13 +28,13 @@ public class SceneLoader : MonoBehaviour
     {
         if (CanLoadScene(scene))
         {
-            Debug.LogWarning("Scene " + scene + " is not present in the build settings. Aborting. ")
+            Debug.LogWarning("Scene " + scene + " is not present in the build settings. Aborting. ");
             return;
         }
 
         if (CanLoadScene(_loadScene))
         {
-            Debug.LogWarning("Load scene is not present in the build settings. Aborting and loading through Scene manager. ")
+            Debug.LogWarning("Load scene is not present in the build settings. Aborting and loading through Scene manager. ");
             SceneManager.LoadScene(SceneToLoad);
             return;
         }
