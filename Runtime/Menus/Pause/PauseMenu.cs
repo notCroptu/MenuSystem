@@ -8,6 +8,7 @@ public class PauseMenu : Menu
 
     [Header("Pause")]
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
+    [SerializeField] private KeyCode _pauseToggleKey = KeyCode.Escape;
     private float _previousTimeScale;
 
     // It's to check if the game is paused to stop other behaviors, mostly stopping the player from being able to use inputs and enumerators (they continue running despite of time scale changes.)
@@ -39,7 +40,7 @@ public class PauseMenu : Menu
         if (_menuCanvas == null)
             return;
 
-        if (SceneManager.GetActiveScene().name != _mainMenuScene && Input.GetKeyDown(KeyCode.Escape)) // TODO: need to change hard coded escape key to a chose yourself at the top.
+        if (SceneManager.GetActiveScene().name != _mainMenuScene && Input.GetKeyDown(_pauseToggleKey)) // the fact it uses get key down is not very mobile friendly, i might wanna add functionality later
         {
             if (_menuCanvas.gameObject.activeSelf) // checking is pause object is active acts like a toggle.
                 Continue();

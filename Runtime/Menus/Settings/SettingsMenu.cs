@@ -1,6 +1,7 @@
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -22,11 +23,19 @@ public class SettingsMenu : Menu
     [SerializeField] private Slider _volume;
     [SerializeField] private TMP_Text _volumeText;
     [SerializeField] private float _maxVolume = 3f;
+    
+    private AudioMixer _masterMixer;
 
     [Header("Music Volume")]
     [SerializeField] private Slider _musicVolume;
     [SerializeField] private TMP_Text _musicVolumeText;
-    private Music _music;
+    public const string MUSIC_VOLUME = "MusicVolume";
+
+    [Header("SFX Volume")]
+    [SerializeField] private Slider _sfxVolume;
+    [SerializeField] private TMP_Text _sfxVolumeText;
+    public const string SFX_VOLUME = "SFXVolume";
+
 
     // TODO: sound effect volume
     // I think i can change music and sound effect change the volumes of a music and a sfx volume thingie on the volume mixer and therefore evading statics and findfirstof
@@ -35,6 +44,10 @@ public class SettingsMenu : Menu
 
     private void Awake()
     {
+        _masterMixer = Resources.Load<AudioMixer>("MasterMixer");
+        if (_masterMixer == null)
+            Debug.LogWarning("Could not find MasterMixer in Resources. ");
+
         if (volume == null)
             Debug.LogWarning(name + " volume reference missing, brightness adjustments disabled.");
         else
@@ -54,6 +67,11 @@ public class SettingsMenu : Menu
             Debug.LogWarning(name + " music volume slider not assigned.");
         else
             _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
+
+        if (_sfxVolume == null)
+            Debug.LogWarning(name + " sfx volume slider not assigned.");
+        else
+            _sfxVolume.onValueChanged.AddListener(ChangeSFXVolume);
     }
 
     private void OnEnable()
@@ -80,6 +98,7 @@ public class SettingsMenu : Menu
         if (_brightness != null) ChangeBrightness(_brightness.value);
         if (_volume != null) ChangeVolume(_volume.value);
         if (_musicVolume != null) ChangeMusicVolume(_musicVolume.value);
+        if (_sfxVolume != null) ChangeSFXVolume(_sfxVolume.value);
 
         Continue();
     }
@@ -130,15 +149,21 @@ public class SettingsMenu : Menu
         float final = _maxVolume * (value - _musicVolume.minValue)
             / (_musicVolume.maxValue - _musicVolume.minValue);
 
-        if (_music == null)
-            _music = FindFirstObjectByType<Music>();
-
-        if (_music != null)
-            _music.Volume = final;
-        else
-            Debug.LogWarning(name + " music component not found in scene.");
+        _masterMixer.SetFloat(MUSIC_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f);
         
         _musicVolumeText?.SetText(FormatShort(final));
+    }
+
+    public void ChangeSFXVolume(float value)
+    {
+        if (_sfxVolume == null) return;
+
+        float final = _maxVolume * (value - _sfxVolume.minValue)
+            / (_sfxVolume.maxValue - _sfxVolume.minValue);
+
+        _masterMixer.SetFloat(SFX_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f);
+        
+        _sfxVolumeText?.SetText(FormatShort(final));
     }
 
     private string FormatShort(float value)
@@ -154,5 +179,6 @@ public class SettingsMenu : Menu
         _brightness?.onValueChanged.RemoveListener(ChangeBrightness);
         _volume?.onValueChanged.RemoveListener(ChangeVolume);
         _musicVolume?.onValueChanged.RemoveListener(ChangeMusicVolume);
+        _sfxVolume?.onValueChanged.RemoveListener(ChangeSFXVolume);
     }
 }

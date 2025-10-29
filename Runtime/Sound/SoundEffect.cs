@@ -8,6 +8,7 @@ public class SoundEffect : Audio
 
     private void Start()
     {
+        ConnectMixer(SettingsMenu.SFX_VOLUME);
         _audioSource.loop = false;
     }
 

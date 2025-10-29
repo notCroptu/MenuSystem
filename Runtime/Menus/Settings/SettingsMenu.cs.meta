@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 0fcd1cbc03ba4b34d8fbfa27cd871a07
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _menuCanvas: {instanceID: 0}
+  - _brightness: {instanceID: 0}
+  - _brightnessText: {instanceID: 0}
+  - volume: {instanceID: 0}
+  - _volume: {instanceID: 0}
+  - _volumeText: {instanceID: 0}
+  - _musicVolume: {instanceID: 0}
+  - _musicVolumeText: {instanceID: 0}
+  - musicGroup: {fileID: 24300002, guid: c30874b2058fd7d419cc410f90e1e3bf, type: 2}
+  - _sfxVolume: {instanceID: 0}
+  - sfxGroup: {fileID: 24300002, guid: 02314500c07ed5a498120f75e78ab6c0, type: 2}
+  - _sfxVolumeText: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
