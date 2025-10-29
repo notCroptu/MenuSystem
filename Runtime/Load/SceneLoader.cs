@@ -26,13 +26,13 @@ public class SceneLoader : MonoBehaviour
 
     public static void Load(string scene, RestoreFlag restoreFlag = null)
     {
-        if (CanLoadScene(scene))
+        if (!CanLoadScene(scene))
         {
             Debug.LogWarning("Scene " + scene + " is not present in the build settings. Aborting. ");
             return;
         }
 
-        if (CanLoadScene(_loadScene))
+        if (!CanLoadScene(_loadScene))
         {
             Debug.LogWarning("Load scene is not present in the build settings. Aborting and loading through Scene manager. ");
             SceneManager.LoadScene(SceneToLoad);
