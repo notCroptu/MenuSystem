@@ -66,7 +66,7 @@ public class SettingsMenu : Menu
             _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
 
             _masterMixer.GetFloat(MUSIC_VOLUME, out float dB);
-            _musicVolume.value = Mathf.Pow(10f, dB / 20f);
+            _musicVolume.value = DecibelToLinear(dB);
         }
         else
             Debug.LogWarning(name + " music volume slider not assigned.");
@@ -76,7 +76,7 @@ public class SettingsMenu : Menu
             _sfxVolume.onValueChanged.AddListener(ChangeSFXVolume);
 
             _masterMixer.GetFloat(SFX_VOLUME, out float dB);
-            _sfxVolume.value = Mathf.Pow(10f, dB / 20f);
+            _sfxVolume.value = DecibelToLinear(dB);
         }
         else
             Debug.LogWarning(name + " sfx volume slider not assigned.");
@@ -172,7 +172,7 @@ public class SettingsMenu : Menu
         float final = _maxVolume * (value - _musicVolume.minValue)
             / (_musicVolume.maxValue - _musicVolume.minValue);
 
-        _masterMixer.SetFloat(MUSIC_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f); // audio mixers expect decibels
+        _masterMixer.SetFloat(MUSIC_VOLUME, LinearToDecibel(final));
         
         _musicVolumeText?.SetText(FormatShort(final));
     }
@@ -184,18 +184,23 @@ public class SettingsMenu : Menu
         float final = _maxVolume * (value - _sfxVolume.minValue)
             / (_sfxVolume.maxValue - _sfxVolume.minValue);
 
-        _masterMixer.SetFloat(SFX_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f); // audio mixers expect decibels
+        _masterMixer.SetFloat(SFX_VOLUME, LinearToDecibel(final));
         
         _sfxVolumeText?.SetText(FormatShort(final));
     }
 
-    private string FormatShort(float value)
+    public static string FormatShort(float value)
     {
         if (value >= 10f)
             return Mathf.RoundToInt(value).ToString();
         else
             return value.ToString("0.0");
     }
+
+    // audio mixers expect decibels
+    public static float DecibelToLinear(float dB) => Mathf.Pow(10f, dB / 20f);
+    public static float LinearToDecibel(float linear) => Mathf.Log10(Mathf.Clamp(linear, 0.001f, 1f)) * 20f;
+
 
     public void OnDestroy()
     {
