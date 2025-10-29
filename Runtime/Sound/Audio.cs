@@ -15,18 +15,18 @@ public abstract class Audio : MonoBehaviour
     {
         if (_audioSource.outputAudioMixerGroup == null)
         {
-            AudioMixer mixer = Resources.Load<AudioMixer>("MasterMixer");
+            AudioMixer mixer = Resources.Load<AudioMixer>(SettingsMenu.MASTER_MIXER);
             if (mixer != null)
             {
                 AudioMixerGroup[] groups = mixer.FindMatchingGroups(mixerGroupName);
                 if (groups.Length > 0)
                     _audioSource.outputAudioMixerGroup = groups[0];
                 else
-                    Debug.LogWarning("Could not find " + mixerGroupName + " mixer group in MasterMixer. ");
+                    Debug.LogWarning("Could not find " + mixerGroupName + " mixer group in " + SettingsMenu.MASTER_MIXER + ". ");
             }
             else
             {
-                Debug.LogWarning("Could not find MasterMixer in Resources. ");
+                Debug.LogWarning("Could not find " + SettingsMenu.MASTER_MIXER + " in Resources. ");
             }
         }
     }

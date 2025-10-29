@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Use this component on your scenes' base cameras if you want post processing to affect their UI.
+/// </summary>
 [RequireComponent(typeof(Camera))]
 public class ActiveUICam : MonoBehaviour
 {

@@ -15,16 +15,17 @@ public class SettingsMenu : Menu
     [Header("Brightness")]
     [SerializeField] private Slider _brightness;
     [SerializeField] private TMP_Text _brightnessText;
-    [SerializeField] private Volume volume;
-    [SerializeField] private float _clampBrightness = 2.5f;
-    private ColorAdjustments _postExposure;
+    [SerializeField] private Volume _postProcessWithGamma;
+    [SerializeField][MinMaxSlider(-1f, 1f)] private Vector2 _minMaxBrightness = new(-0.5f, 0.5f);
+    private LiftGammaGain _gamma;
 
     [Header("General Volume")]
     [SerializeField] private Slider _volume;
     [SerializeField] private TMP_Text _volumeText;
-    [SerializeField] private float _maxVolume = 3f;
+    [SerializeField] private float _maxVolume = 2f;
     
     private AudioMixer _masterMixer;
+    public const string MASTER_MIXER = "MasterMixer";
 
     [Header("Music Volume")]
     [SerializeField] private Slider _musicVolume;
@@ -44,41 +45,61 @@ public class SettingsMenu : Menu
 
     private void Awake()
     {
-        _masterMixer = Resources.Load<AudioMixer>("MasterMixer");
+        _masterMixer = Resources.Load<AudioMixer>(MASTER_MIXER);
         if (_masterMixer == null)
-            Debug.LogWarning("Could not find MasterMixer in Resources. ");
-
-        if (volume == null)
-            Debug.LogWarning(name + " volume reference missing, brightness adjustments disabled.");
-        else
-            volume.profile?.TryGet(out _postExposure);
-
-        if (_brightness == null)
-            Debug.LogWarning(name + " brightness slider not assigned.");
-        else
-            _brightness.onValueChanged.AddListener(ChangeBrightness);
-
-        if (_volume == null)
-            Debug.LogWarning(name + " general volume slider not assigned.");
-        else
-            _volume.onValueChanged.AddListener(ChangeVolume);
-
-        if (_musicVolume == null)
-            Debug.LogWarning(name + " music volume slider not assigned.");
-        else
-            _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
-
-        if (_sfxVolume == null)
-            Debug.LogWarning(name + " sfx volume slider not assigned.");
-        else
-            _sfxVolume.onValueChanged.AddListener(ChangeSFXVolume);
+            Debug.LogWarning("Could not find " + MASTER_MIXER + " in Resources. ");
     }
 
     private void OnEnable()
     {
-        if (_volume != null) _volume.value = 1f;
-        if (_musicVolume != null) _musicVolume.value = 1f;
-        if (_brightness != null) _brightness.value = 0.5f;
+        if (_volume != null)
+        {
+            _volume.onValueChanged.AddListener(ChangeVolume);
+
+            _volume.value = _volume.maxValue * AudioListener.volume / _maxVolume;
+        }
+        else
+            Debug.LogWarning(name + " post process slider not assigned.");
+        
+        if (_musicVolume != null)
+        {
+            _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
+
+            _masterMixer.GetFloat(MUSIC_VOLUME, out float dB);
+            _musicVolume.value = Mathf.Pow(10f, dB / 20f);
+        }
+        else
+            Debug.LogWarning(name + " music volume slider not assigned.");
+
+        if (_sfxVolume != null)
+        {
+            _sfxVolume.onValueChanged.AddListener(ChangeSFXVolume);
+
+            _masterMixer.GetFloat(SFX_VOLUME, out float dB);
+            _sfxVolume.value = Mathf.Pow(10f, dB / 20f);
+        }
+        else
+            Debug.LogWarning(name + " sfx volume slider not assigned.");
+
+        if (_brightness != null)
+        {
+            if (_postProcessWithGamma != null)
+            {
+                if (_postProcessWithGamma.profile.TryGet(out _gamma))
+                {
+                    _brightness.onValueChanged.AddListener(ChangeBrightness);
+
+                    float normalized = Mathf.InverseLerp(_minMaxBrightness.x, _minMaxBrightness.y, _gamma.gamma.value.w);
+                    _brightness.value = Mathf.Lerp(_brightness.minValue, _brightness.maxValue, normalized);
+                }
+                else
+                    Debug.LogWarning(name + " gamma reference missing in post process, brightness adjustments disabled.");                
+            }
+            else
+                Debug.LogWarning(name + " post process reference missing, brightness adjustments disabled.");
+        }
+        else
+            Debug.LogWarning(name + " brightness slider not assigned.");
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -95,11 +116,6 @@ public class SettingsMenu : Menu
     }
     private void Start()
     {
-        if (_brightness != null) ChangeBrightness(_brightness.value);
-        if (_volume != null) ChangeVolume(_volume.value);
-        if (_musicVolume != null) ChangeMusicVolume(_musicVolume.value);
-        if (_sfxVolume != null) ChangeSFXVolume(_sfxVolume.value);
-
         Continue();
     }
 
@@ -119,15 +135,22 @@ public class SettingsMenu : Menu
 
     public void ChangeBrightness(float value)
     {
-        if (_postExposure == null || _brightness == null) return;
-        
-        float final =  _clampBrightness * (value - _brightness.minValue)
-            / (_brightness.maxValue - _brightness.minValue);
+        Debug.Log("Attempting brightness change. ");
+        if (_gamma == null || _brightness == null) return;
 
-        _postExposure.postExposure.value =  final;
-        
+        float normalized = Mathf.InverseLerp(_brightness.minValue, _brightness.maxValue, value);
+        float final = Mathf.Lerp(_minMaxBrightness.x, _minMaxBrightness.y, normalized);  // clamp between volume gamma's best values
+
+        // gamma from post processing actually maps only the value.w for brightness, between the values of -1 and 1
+
+        Vector4 newGamma = _gamma.gamma.value;
+        newGamma.w = final;
+        _gamma.gamma.Override(newGamma);
+
         if (_brightnessText != null)
             _brightnessText.text = FormatShort(final);
+        
+        Debug.Log("Changing brightness from value " + value + " to: " + _gamma.gamma.value + ". ");
     }
 
     public void ChangeVolume(float value)
@@ -149,7 +172,7 @@ public class SettingsMenu : Menu
         float final = _maxVolume * (value - _musicVolume.minValue)
             / (_musicVolume.maxValue - _musicVolume.minValue);
 
-        _masterMixer.SetFloat(MUSIC_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f);
+        _masterMixer.SetFloat(MUSIC_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f); // audio mixers expect decibels
         
         _musicVolumeText?.SetText(FormatShort(final));
     }
@@ -161,7 +184,7 @@ public class SettingsMenu : Menu
         float final = _maxVolume * (value - _sfxVolume.minValue)
             / (_sfxVolume.maxValue - _sfxVolume.minValue);
 
-        _masterMixer.SetFloat(SFX_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f);
+        _masterMixer.SetFloat(SFX_VOLUME, Mathf.Log10(Mathf.Clamp(final, 0.001f, 1f)) * 20f); // audio mixers expect decibels
         
         _sfxVolumeText?.SetText(FormatShort(final));
     }
