@@ -35,7 +35,7 @@ public class SceneLoader : MonoBehaviour
         if (!CanLoadScene(_loadScene))
         {
             Debug.LogWarning("Load scene is not present in the build settings. Aborting and loading through Scene manager. ");
-            SceneManager.LoadScene(SceneToLoad);
+            SceneManager.LoadScene(scene);
             return;
         }
 
