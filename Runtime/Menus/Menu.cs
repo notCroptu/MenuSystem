@@ -4,18 +4,18 @@ using UnityEngine;
 public abstract class Menu : MonoBehaviour
 {
     [Header("Menu")]
-    [SerializeField] private Canvas canvas;
-    [Scene][SerializeField] protected string _mainMenu;
+    [SerializeField] protected Canvas _menuCanvas;
+    [Scene][SerializeField] protected string _mainMenuScene;
 
     protected SettingsMenu _settings;
 
     private void Awake()
     {
-        if (canvas == null)
+        if (_menuCanvas == null)
         {
-            canvas = GetComponent<Canvas>();
-            if (canvas == null)
-                Debug.LogWarning(name + " missing Canvas reference.");
+            _menuCanvas = GetComponent<Canvas>();
+            if (_menuCanvas == null)
+                Debug.LogWarning(name + " missing _menuCanvas reference.");
         }
 
         UpdateCamera();
@@ -38,18 +38,18 @@ public abstract class Menu : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if (canvas == null) return;
+        if (_menuCanvas == null) return;
 
         if (ActiveUICam.ActiveUICamera != null) // if an active UI cam exists, then set it as the focus, with screen space as camera so the ui receives post processing
         {
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = ActiveUICam.ActiveUICamera;
-            canvas.planeDistance = 1f;
+            _menuCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+            _menuCanvas.worldCamera = ActiveUICam.ActiveUICamera;
+            _menuCanvas.planeDistance = 1f;
         }
         else
         {
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.worldCamera = null;
+            _menuCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _menuCanvas.worldCamera = null;
         }
     }
 
@@ -60,7 +60,7 @@ public abstract class Menu : MonoBehaviour
 
     private void Update()
     {
-        if (canvas != null && canvas.worldCamera == null)
+        if (_menuCanvas != null && _menuCanvas.worldCamera == null)
             UpdateCamera();
     }
 

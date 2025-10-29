@@ -8,9 +8,8 @@ using UnityEngine.UI;
 
 public class SettingsMenu : Menu
 {
-    [Header("Settings")]
     [InfoBox("The settings game object must not be the same as the setting script's. \n Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
-    [SerializeField] private GameObject _settingsCanvas;
+    [Header("Settings")]
 
     [Header("Brightness")]
     [SerializeField] private Slider _brightness;
@@ -87,16 +86,16 @@ public class SettingsMenu : Menu
 
     public void TurnOnSettings()
     {
-        if (_settingsCanvas != null)
-            _settingsCanvas.SetActive(true);
+        if (_menuCanvas != null)
+            _menuCanvas.gameObject.SetActive(true);
         else
             Debug.LogWarning(name + " _settingsCanvas not assigned.");
     }
 
     public override void Continue()
     {
-        if ( _settingsCanvas != null )
-            _settingsCanvas.SetActive(false);
+        if ( _menuCanvas != null )
+            _menuCanvas.gameObject.SetActive(false);
     }
 
     public void ChangeBrightness(float value)

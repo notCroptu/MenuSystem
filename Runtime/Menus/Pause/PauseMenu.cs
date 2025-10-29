@@ -4,9 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : Menu
 {
-    [Header("Pause")]
     [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. \n Pause menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
-    [SerializeField] private GameObject _pauseCanvas;
+
+    [Header("Pause")]
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
     private float _previousTimeScale;
 
@@ -25,10 +25,10 @@ public class PauseMenu : Menu
 
     private void Start()
     {
-        if (_pauseCanvas == null)
+        if (_menuCanvas == null)
             Debug.LogWarning(name + " missing _pauseCanvas GameObject.");
         else
-            _pauseCanvas.SetActive(false);
+            _menuCanvas.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -36,12 +36,12 @@ public class PauseMenu : Menu
     /// </summary>
     private void LateUpdate()
     {
-        if (_pauseCanvas == null)
+        if (_menuCanvas == null)
             return;
 
-        if (SceneManager.GetActiveScene().name != _mainMenu && Input.GetKeyDown(KeyCode.Escape)) // TODO: need to change hard coded escape key to a chose yourself at the top.
+        if (SceneManager.GetActiveScene().name != _mainMenuScene && Input.GetKeyDown(KeyCode.Escape)) // TODO: need to change hard coded escape key to a chose yourself at the top.
         {
-            if (_pauseCanvas.activeSelf) // checking is pause object is active acts like a toggle.
+            if (_menuCanvas.gameObject.activeSelf) // checking is pause object is active acts like a toggle.
                 Continue();
             else
                 OpenPause();
@@ -61,14 +61,14 @@ public class PauseMenu : Menu
 
         Debug.Log("loading main");
         base.Quit(); // un-subscribes all DDOLs (except the object's own)
-        SceneLoader.Load(_mainMenu);
+        SceneLoader.Load(_mainMenuScene);
     }
 
     public void OpenPause()
     {
-        if (_pauseCanvas == null) return;
+        if (_menuCanvas == null) return;
 
-        _pauseCanvas.SetActive(true);
+        _menuCanvas.gameObject.SetActive(true);
 
         if (_timeScaleMultiplier == 0f)
         {
@@ -93,8 +93,8 @@ public class PauseMenu : Menu
         else
             Debug.LogWarning(name + " SettingsMenu reference missing in PauseMenu.");
         
-        if (_pauseCanvas != null)
-            _pauseCanvas.SetActive(false);
+        if (_menuCanvas != null)
+            _menuCanvas.gameObject.SetActive(false);
 
         if (_timeScaleMultiplier == 0f)
         {
