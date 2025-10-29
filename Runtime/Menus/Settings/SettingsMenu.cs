@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
@@ -23,7 +24,7 @@ public class SettingsMenu : Menu
     [SerializeField] private Slider _volume;
     [SerializeField] private TMP_Text _volumeText;
     [SerializeField] private float _maxVolume = 2f;
-    
+
     private AudioMixer _masterMixer;
     public const string MASTER_MIXER = "MasterMixer";
 
@@ -38,7 +39,11 @@ public class SettingsMenu : Menu
     public const string SFX_VOLUME = "SFXVolume";
 
 
-    // TODO: sound effect volume
+    [Header("Custom Options")]
+
+    [SerializeField] private OptionToggle[] _optionToggles;
+    private Dictionary<string, Toggle> _toggleDict;
+
     // I think i can change music and sound effect change the volumes of a music and a sfx volume thingie on the volume mixer and therefore evading statics and findfirstof
 
     // TODO: mouse sensitivity
@@ -60,7 +65,7 @@ public class SettingsMenu : Menu
         }
         else
             Debug.LogWarning(name + " post process slider not assigned.");
-        
+
         if (_musicVolume != null)
         {
             _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
@@ -93,7 +98,7 @@ public class SettingsMenu : Menu
                     _brightness.value = Mathf.Lerp(_brightness.minValue, _brightness.maxValue, normalized);
                 }
                 else
-                    Debug.LogWarning(name + " gamma reference missing in post process, brightness adjustments disabled.");                
+                    Debug.LogWarning(name + " gamma reference missing in post process, brightness adjustments disabled.");
             }
             else
                 Debug.LogWarning(name + " post process reference missing, brightness adjustments disabled.");
@@ -116,6 +121,28 @@ public class SettingsMenu : Menu
     }
     private void Start()
     {
+        _toggleDict = new Dictionary<string, Toggle>();
+
+        foreach (OptionToggle option in _optionToggles)
+        {
+            if (option == null || string.IsNullOrEmpty(option.Name))
+            {
+                Debug.LogWarning("Skipping invalid OptionToggle. Missing name or reference. ");
+                continue;
+            }
+
+            if (option.Toggle == null)
+            {
+                Debug.LogWarning("Skipping invalid OptionToggle named " + option.Name + ". Toggle UI reference missing in settings. ");
+                continue;
+            }
+
+            if (!_toggleDict.ContainsKey(option.Name))
+                _toggleDict.Add(option.Name, option.Toggle);
+            else
+                Debug.LogWarning("Duplicate OptionToggle named " + option.Name + ". Removing. ");
+        }
+
         Continue();
     }
 
@@ -129,7 +156,7 @@ public class SettingsMenu : Menu
 
     public override void Continue()
     {
-        if ( _menuCanvas != null )
+        if (_menuCanvas != null)
             _menuCanvas.gameObject.SetActive(false);
     }
 
@@ -149,7 +176,7 @@ public class SettingsMenu : Menu
 
         if (_brightnessText != null)
             _brightnessText.text = FormatShort(final);
-        
+
         Debug.Log("Changing brightness from value " + value + " to: " + _gamma.gamma.value + ". ");
     }
 
@@ -173,7 +200,7 @@ public class SettingsMenu : Menu
             / (_musicVolume.maxValue - _musicVolume.minValue);
 
         _masterMixer.SetFloat(MUSIC_VOLUME, LinearToDecibel(final));
-        
+
         _musicVolumeText?.SetText(FormatShort(final));
     }
 
@@ -185,7 +212,7 @@ public class SettingsMenu : Menu
             / (_sfxVolume.maxValue - _sfxVolume.minValue);
 
         _masterMixer.SetFloat(SFX_VOLUME, LinearToDecibel(final));
-        
+
         _sfxVolumeText?.SetText(FormatShort(final));
     }
 
@@ -208,5 +235,22 @@ public class SettingsMenu : Menu
         _volume?.onValueChanged.RemoveListener(ChangeVolume);
         _musicVolume?.onValueChanged.RemoveListener(ChangeMusicVolume);
         _sfxVolume?.onValueChanged.RemoveListener(ChangeSFXVolume);
+    }
+
+    public bool CheckToggle(string optionName)
+    {
+        if (_toggleDict.TryGetValue(optionName, out var toggle))
+            return toggle.isOn;
+
+        Debug.LogWarning("No toggle found for " + optionName + ". ");
+        return false;
+    }
+
+    public void SetToggle(string optionName, bool value)
+    {
+        if (_toggleDict.TryGetValue(optionName, out var toggle))
+            toggle.isOn = value;
+        else
+            Debug.LogWarning("No toggle found for " + optionName + ". ");
     }
 }
