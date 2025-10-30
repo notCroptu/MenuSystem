@@ -5,7 +5,7 @@ public abstract class Menu : MonoBehaviour
 {
     [Header("Menu")]
     [SerializeField] protected Canvas _menuCanvas;
-    [Scene][SerializeField] protected string _mainMenuScene;
+    [SerializeField] protected float _runtimePlaneDistance = 1f;
 
     protected SettingsMenu _settings;
 
@@ -44,7 +44,7 @@ public abstract class Menu : MonoBehaviour
         {
             _menuCanvas.renderMode = RenderMode.ScreenSpaceCamera;
             _menuCanvas.worldCamera = ActiveUICam.ActiveUICamera;
-            _menuCanvas.planeDistance = 1f;
+            _menuCanvas.planeDistance = _runtimePlaneDistance;
         }
         else
         {

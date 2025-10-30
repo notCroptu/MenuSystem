@@ -7,6 +7,7 @@ public class PauseMenu : Menu
     [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. \n Pause menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
 
     [Header("Pause")]
+    [Scene][SerializeField] private string _mainMenuScene;
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
     [SerializeField] private KeyCode _pauseToggleKey = KeyCode.Escape;
     private float _previousTimeScale;
