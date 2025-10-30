@@ -57,11 +57,18 @@ public class PauseMenu : Menu
         // preform save actions
 
         Save();
+        Continue();
 
+        base.Quit(); // un-subscribes all DDOLs (except the object's own)
+        Application.Quit();
+    }
+
+    public void MainMenu()
+    {
+        Save();
         Continue();
 
         Debug.Log("loading main");
-        base.Quit(); // un-subscribes all DDOLs (except the object's own)
         SceneLoader.Load(_mainMenuScene);
     }
 

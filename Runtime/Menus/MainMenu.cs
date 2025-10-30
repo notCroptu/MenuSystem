@@ -20,8 +20,6 @@ public class MainMenu : Menu
     public override void Quit()
     {
         base.Quit();
-
-        Application.Quit();
     }
 
     /// <summary>
