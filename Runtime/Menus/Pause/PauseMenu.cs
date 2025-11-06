@@ -67,7 +67,7 @@ public class PauseMenu : Menu
     public void MainMenu()
     {
         Save();
-        Continue();
+        Continue(); // BUG: Somehow when going back to menu the pause thats already there doesn't die
 
         Debug.Log("loading main");
         SceneLoader.Load(_mainMenuScene);
