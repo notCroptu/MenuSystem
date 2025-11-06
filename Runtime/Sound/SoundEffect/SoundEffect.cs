@@ -26,7 +26,7 @@ public class SoundEffect : Audio
         else
             sfx = ChooseSoundEffect(soundEffectName);
 
-        if (sfx != null && sfx.PossibleClips != null && sfx.PossibleClips.Length > 0)
+        if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
             return;
 
         _audioSource.Stop();
