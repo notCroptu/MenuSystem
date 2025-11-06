@@ -32,6 +32,8 @@ public class SoundEffect : Audio
         _audioSource.Stop();
         _audioSource.clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
         _audioSource.Play();
+
+        Debug.LogWarning("Playing sound effect named " + name + " in " + gameObject.name);
     }
 
     private SoundEffectData ChooseSoundEffect(string name)
