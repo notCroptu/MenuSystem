@@ -6,36 +6,37 @@ using UnityEngine;
 /// </summary>
 public class DontDestroyOnLoad : MonoBehaviour
 {
-    private static HashSet<string> _instances;
+    // :p
+    [field:SerializeField] public static HashSet<string> Instances { get; private set; }
+    public static HashSet<GameObject> InstancesGO { get; private set; }
     private void Awake()
     {
-        _instances ??= new();
-
-        if (!_instances.Contains(gameObject.name))
+        Instances ??= new();
+        InstancesGO ??= new();
+        
+        if ( ! Instances.Contains(gameObject.name) )
         {
             Debug.Log("Adding new DDOL: " + gameObject.name);
-            _instances.Add(gameObject.name);
+            Instances.Add(gameObject.name);
+            InstancesGO.Add(gameObject);
             DontDestroyOnLoad(gameObject);
         }
         else
-        {
-            Debug.LogWarning(name + " duplicate DDOL detected, destroying this instance: " + gameObject.name);
             Destroy(gameObject);
-        }
     }
 
     private void OnDestroy()
     {
-        if (_instances.Contains(gameObject.name))
+        if ( InstancesGO.Contains(gameObject) )
         {
-            Debug.Log("Removing DDOL: " + gameObject.name);
-            _instances.Remove(gameObject.name);
+            Instances.Remove(gameObject.name);
+            InstancesGO.Remove(gameObject);
         }
     }
 
     private void OnApplicationQuit()
     {
-        if (_instances != null)
-            _instances.Clear();
+        Instances.Clear();
+        InstancesGO.Clear();
     }
 }

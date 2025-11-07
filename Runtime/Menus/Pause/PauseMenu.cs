@@ -1,5 +1,6 @@
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : Menu
@@ -73,11 +74,15 @@ public class PauseMenu : Menu
         SceneLoader.Load(_mainMenuScene);
     }
 
+    private UnityEvent _onPause;
+
     public void OpenPause()
     {
-        if (_menuCanvas == null) return;
 
-        _menuCanvas.gameObject.SetActive(true);
+        _onPause?.Invoke();
+
+        if (_menuCanvas != null)
+            _menuCanvas.gameObject.SetActive(true);
 
         if (_timeScaleMultiplier == 0f)
         {
