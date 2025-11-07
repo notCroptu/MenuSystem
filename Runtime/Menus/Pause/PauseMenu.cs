@@ -74,7 +74,7 @@ public class PauseMenu : Menu
         SceneLoader.Load(_mainMenuScene);
     }
 
-    public UnityEvent OnPause { get; private set; }
+    [field:SerializeField] public UnityEvent OnPause { get; private set; }
 
     public void OpenPause()
     {
