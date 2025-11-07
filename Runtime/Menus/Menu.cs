@@ -85,6 +85,12 @@ public abstract class Menu : MonoBehaviour
     public abstract void Continue();
     public virtual void Quit()
     {
+        DestroyDDOLs();
+        Application.Quit();
+    }
+
+    protected void DestroyDDOLs()
+    {
         // It's important to delete all DDOLs except our own
         // Deleting game time DDOLs removes "progress" that wasn't saved from interfering when loading or starting a new game
         // Not deleting our own, ensures pause will not be deleted, keeping settings data during play

@@ -61,14 +61,15 @@ public class PauseMenu : Menu
         Save();
         Continue();
 
-        base.Quit(); // un-subscribes all DDOLs (except the object's own)
-        Application.Quit();
+        base.Quit();
     }
 
     public void MainMenu()
     {
         Save();
-        Continue(); // BUG: Somehow when going back to menu the pause thats already there doesn't die
+        Continue();
+
+        DestroyDDOLs(); // remove DDOLs specifc to game (excludes own)
 
         Debug.Log("loading main");
         SceneLoader.Load(_mainMenuScene);

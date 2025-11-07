@@ -6,37 +6,33 @@ using UnityEngine;
 /// </summary>
 public class DontDestroyOnLoad : MonoBehaviour
 {
-    // :p
-    [field:SerializeField] public static HashSet<string> Instances { get; private set; }
-    public static HashSet<GameObject> InstancesGO { get; private set; }
+    public static Dictionary<string, GameObject> Instances { get; private set; }
     private void Awake()
     {
         Instances ??= new();
-        InstancesGO ??= new();
-        
-        if ( ! Instances.Contains(gameObject.name) )
+
+        if (!Instances.ContainsKey(gameObject.name))
         {
             Debug.Log("Adding new DDOL: " + gameObject.name);
-            Instances.Add(gameObject.name);
-            InstancesGO.Add(gameObject);
+            Instances.Add(gameObject.name, gameObject);
             DontDestroyOnLoad(gameObject);
         }
         else
+        {
             Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
     {
-        if ( InstancesGO.Contains(gameObject) )
-        {
+        // Remove entry only if the object's string matches the GO reference  in the dictionary.
+        // This prevents destroying a duplicate from unregistering the real instance.
+        if (Instances.TryGetValue(gameObject.name, out var obj) && obj == gameObject)
             Instances.Remove(gameObject.name);
-            InstancesGO.Remove(gameObject);
-        }
     }
 
     private void OnApplicationQuit()
     {
         Instances.Clear();
-        InstancesGO.Clear();
     }
 }
