@@ -74,12 +74,12 @@ public class PauseMenu : Menu
         SceneLoader.Load(_mainMenuScene);
     }
 
-    private UnityEvent _onPause;
+    public UnityEvent OnPause { get; private set; }
 
     public void OpenPause()
     {
 
-        _onPause?.Invoke();
+        OnPause?.Invoke();
 
         if (_menuCanvas != null)
             _menuCanvas.gameObject.SetActive(true);
