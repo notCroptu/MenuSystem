@@ -23,8 +23,10 @@ public class PauseMenu : Menu
         {
             Debug.Log("Pause count changing to: " + value);
             _pauseCanvasCount = value;
+            OnPause.Invoke(Paused);
         }
     }
+    [field:SerializeField] public UnityEvent<bool> OnPause { get; private set; }
 
     private void Start()
     {
@@ -75,8 +77,6 @@ public class PauseMenu : Menu
         SceneLoader.Load(_mainMenuScene);
     }
 
-    [field:SerializeField] public UnityEvent<bool> OnPause { get; private set; }
-
     public void OpenPause()
     {
         if (_menuCanvas != null)
@@ -93,7 +93,6 @@ public class PauseMenu : Menu
         }
 
         Count++;
-        OnPause?.Invoke(Paused);
     }
 
     /// <summary>
