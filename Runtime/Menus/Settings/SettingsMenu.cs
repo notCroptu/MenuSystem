@@ -23,7 +23,7 @@ public class SettingsMenu : Menu
     [Header("General Volume")]
     [SerializeField] private Slider _volume;
     [SerializeField] private TMP_Text _volumeText;
-    [SerializeField] private float _maxVolume = 2f;
+    [SerializeField] private float _maxVolume = 1f;
 
     private AudioMixer _masterMixer;
     public const string MASTER_MIXER = "MasterMixer";
@@ -184,36 +184,35 @@ public class SettingsMenu : Menu
     {
         if (_volume == null) return;
 
-        float final = _maxVolume * (value - _volume.minValue)
-            / (_volume.maxValue - _volume.minValue);
-
-        AudioListener.volume = final;
-
-        if (_volumeText != null)
-            _volumeText.text = FormatShort(final);
+        AudioListener.volume = LinearToDecibel(GetVolume(value, _volume, _volumeText));
     }
     public void ChangeMusicVolume(float value)
     {
         if (_musicVolume == null) return;
 
-        float final = _maxVolume * (value - _musicVolume.minValue)
-            / (_musicVolume.maxValue - _musicVolume.minValue);
-
-        _masterMixer.SetFloat(MUSIC_VOLUME, LinearToDecibel(final));
-
-        _musicVolumeText?.SetText(FormatShort(final));
+        _masterMixer.SetFloat(
+            MUSIC_VOLUME,
+            LinearToDecibel(GetVolume(value, _musicVolume, _musicVolumeText)));
     }
 
     public void ChangeSFXVolume(float value)
     {
         if (_sfxVolume == null) return;
 
-        float final = _maxVolume * (value - _sfxVolume.minValue)
-            / (_sfxVolume.maxValue - _sfxVolume.minValue);
+        _masterMixer.SetFloat(
+            SFX_VOLUME,
+            LinearToDecibel(GetVolume(value, _sfxVolume, _sfxVolumeText)));
+    }
 
-        _masterMixer.SetFloat(SFX_VOLUME, LinearToDecibel(final));
+    private float GetVolume(float value, Slider slider, TMP_Text text)
+    {
+        float final = _maxVolume * (value - slider.minValue)
+            / (slider.maxValue - slider.minValue);
 
-        _sfxVolumeText?.SetText(FormatShort(final));
+        if (text != null)
+            text.text = FormatShort(final);
+        
+        return final;
     }
 
     public static string FormatShort(float value)

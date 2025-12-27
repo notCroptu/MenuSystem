@@ -15,7 +15,7 @@ public class PauseMenu : Menu
 
     // It's to check if the game is paused to stop other behaviors, mostly stopping the player from being able to use inputs and enumerators (they continue running despite of time scale changes.)
     public bool Paused => Count != 0;
-    public int _pauseCanvasCount = 0;
+    private int _pauseCanvasCount = 0;
     public int Count
     {
         get { return _pauseCanvasCount; }

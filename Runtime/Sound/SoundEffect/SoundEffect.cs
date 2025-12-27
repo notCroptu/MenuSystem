@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -5,6 +6,7 @@ public class SoundEffect : Audio
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
+    [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
 
     private void Start()
     {
@@ -14,10 +16,15 @@ public class SoundEffect : Audio
 
     public void Play(string soundEffectName)
     {
-        if (_waitForCompletion && _audioSource.isPlaying) return;
-
         if (_soundEffects.Length <= 0)
             return;
+        
+        if (_waitForCompletion && _audioSource.isPlaying)
+        {
+            if (_toggleAudio && _audioSource.isPlaying)
+                _audioSource.Stop();
+            return;
+        }
 
         SoundEffectData sfx;
 

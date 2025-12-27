@@ -26,7 +26,7 @@ public class DontDestroyOnLoad : MonoBehaviour
     private void OnDestroy()
     {
         // Remove entry only if the object's string matches the GO reference  in the dictionary.
-        // This prevents destroying a duplicate from unregistering the real instance.
+        // This prevents a destroying duplicate from unregistering the real instance.
         if (Instances.TryGetValue(gameObject.name, out var obj) && obj == gameObject)
             Instances.Remove(gameObject.name);
     }

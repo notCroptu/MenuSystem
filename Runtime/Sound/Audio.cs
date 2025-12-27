@@ -8,7 +8,8 @@ public abstract class Audio : MonoBehaviour
 
     private void Awake()
     {
-        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = GetComponent<AudioSource>();
     }
 
     protected void ConnectMixer(string mixerGroupName)
