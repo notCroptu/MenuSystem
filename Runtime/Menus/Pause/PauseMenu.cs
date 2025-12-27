@@ -75,13 +75,10 @@ public class PauseMenu : Menu
         SceneLoader.Load(_mainMenuScene);
     }
 
-    [field:SerializeField] public UnityEvent OnPause { get; private set; }
+    [field:SerializeField] public UnityEvent<bool> OnPause { get; private set; }
 
     public void OpenPause()
     {
-
-        OnPause?.Invoke();
-
         if (_menuCanvas != null)
             _menuCanvas.gameObject.SetActive(true);
 
@@ -96,6 +93,7 @@ public class PauseMenu : Menu
         }
 
         Count++;
+        OnPause?.Invoke(Paused);
     }
 
     /// <summary>
