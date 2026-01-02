@@ -1,26 +1,46 @@
-using MenuSystem.Settings;
 using NaughtyAttributes;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
-public class SoundEffect : Audio
+public class SoundEffect2D : MonoBehaviour
 {
+    [SerializeField] private AudioClip _audioClip;
+    private SoundManager2D _soundManager;
+    private AudioSource _audioSource;
+
+    public void Play()
+    {
+        if (_soundManager == null)
+            _soundManager = FindFirstObjectByType<SoundManager2D>();
+
+        if (_soundManager == null)
+        {
+            Debug.Log("Couldn't find sound manager. ");
+            return;
+        }
+
+        _soundManager.PlaySound(_audioClip);
+    }
+
+
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
     [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
-
-    private void Start()
-    {
-        ConnectMixer(Volume.SFX.ToName());
-        _audioSource.loop = false;
-    }
 
     public void Play(string soundEffectName)
     {
         if (_soundEffects.Length <= 0)
             return;
+
+        if (_soundManager == null)
+            _soundManager = FindFirstObjectByType<SoundManager2D>();
+
+        if (_soundManager == null)
+        {
+            Debug.Log("Couldn't find sound manager. ");
+            return;
+        }
         
-        if (_waitForCompletion && _audioSource.isPlaying)
+        if (_audioSource != null && _waitForCompletion && _audioSource.isPlaying)
         {
             if (_toggleAudio && _audioSource.isPlaying)
                 _audioSource.Stop();
@@ -37,11 +57,7 @@ public class SoundEffect : Audio
         if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
             return;
 
-        _audioSource.Stop();
-        _audioSource.clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
-        _audioSource.Play();
-
-        Debug.LogWarning("Playing sound effect named " + name + " in " + gameObject.name);
+        _audioSource = _soundManager.PlaySound(_audioClip);
     }
 
     private SoundEffectData ChooseSoundEffect(string name)

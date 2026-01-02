@@ -1,10 +1,8 @@
-using System.Collections.Generic;
+using MenuSystem.Settings;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,12 +11,7 @@ public class SettingsMenu : Menu
     [InfoBox("The settings game object must not be the same as the setting script's. \n Settings menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
     [Header("Settings")]
 
-    [Header("Brightness")]
-    [SerializeField] private Slider _brightness;
-    [SerializeField] private TMP_Text _brightnessText;
-    [SerializeField] private Volume _postProcessWithGamma;
-    [SerializeField][MinMaxSlider(-1f, 1f)] private Vector2 _minMaxBrightness = new(-0.5f, 0.5f);
-    private LiftGammaGain _gamma;
+    [SerializeField] private BrightnessSlider _brightness;
 
     [Header("General Volume")]
     [SerializeField] private Slider _volume;
@@ -26,23 +19,11 @@ public class SettingsMenu : Menu
     [SerializeField] private float _maxVolume = 1f;
 
     private AudioMixer _masterMixer;
-    public const string MASTER_MIXER = "MasterMixer";
 
-    [Header("Music Volume")]
-    [SerializeField] private Slider _musicVolume;
-    [SerializeField] private TMP_Text _musicVolumeText;
-    public const string MUSIC_VOLUME = "MusicVolume";
-
-    [Header("SFX Volume")]
-    [SerializeField] private Slider _sfxVolume;
-    [SerializeField] private TMP_Text _sfxVolumeText;
-    public const string SFX_VOLUME = "SFXVolume";
-
-
-    [Header("Custom Options")]
-
+    [SerializeField] private SoundSlider[] _soundSliders;
+    
+    [Header("Option Toggles")]
     [SerializeField] private OptionToggle[] _optionToggles;
-    private Dictionary<string, Toggle> _toggleDict;
 
     // I think i can change music and sound effect change the volumes of a music and a sfx volume thingie on the volume mixer and therefore evading statics and findfirstof
 
@@ -50,9 +31,9 @@ public class SettingsMenu : Menu
 
     private void Awake()
     {
-        _masterMixer = Resources.Load<AudioMixer>(MASTER_MIXER);
+        _masterMixer = Resources.Load<AudioMixer>(Volume.MASTER.ToName());
         if (_masterMixer == null)
-            Debug.LogWarning("Could not find " + MASTER_MIXER + " in Resources. ");
+            Debug.LogWarning("Could not find " + Volume.MASTER.ToName() + " in Resources. ");
     }
 
     private void OnEnable()
@@ -60,51 +41,15 @@ public class SettingsMenu : Menu
         if (_volume != null)
         {
             _volume.onValueChanged.AddListener(ChangeVolume);
-
-            _volume.value = _volume.maxValue * AudioListener.volume / _maxVolume;
+            _volume.value = PlayerPrefs.GetFloat(Volume.MASTER.ToName(), _volume.maxValue * AudioListener.volume / _maxVolume);
         }
         else
             Debug.LogWarning(name + " post process slider not assigned.");
 
-        if (_musicVolume != null)
-        {
-            _musicVolume.onValueChanged.AddListener(ChangeMusicVolume);
+        _brightness.Init();
 
-            _masterMixer.GetFloat(MUSIC_VOLUME, out float dB);
-            _musicVolume.value = DecibelToLinear(dB);
-        }
-        else
-            Debug.LogWarning(name + " music volume slider not assigned.");
-
-        if (_sfxVolume != null)
-        {
-            _sfxVolume.onValueChanged.AddListener(ChangeSFXVolume);
-
-            _masterMixer.GetFloat(SFX_VOLUME, out float dB);
-            _sfxVolume.value = DecibelToLinear(dB);
-        }
-        else
-            Debug.LogWarning(name + " sfx volume slider not assigned.");
-
-        if (_brightness != null)
-        {
-            if (_postProcessWithGamma != null)
-            {
-                if (_postProcessWithGamma.profile.TryGet(out _gamma))
-                {
-                    _brightness.onValueChanged.AddListener(ChangeBrightness);
-
-                    float normalized = Mathf.InverseLerp(_minMaxBrightness.x, _minMaxBrightness.y, _gamma.gamma.value.w);
-                    _brightness.value = Mathf.Lerp(_brightness.minValue, _brightness.maxValue, normalized);
-                }
-                else
-                    Debug.LogWarning(name + " gamma reference missing in post process, brightness adjustments disabled.");
-            }
-            else
-                Debug.LogWarning(name + " post process reference missing, brightness adjustments disabled.");
-        }
-        else
-            Debug.LogWarning(name + " brightness slider not assigned.");
+        foreach (SoundSlider sound in _soundSliders)
+            sound.Init(_masterMixer, _maxVolume);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -121,26 +66,10 @@ public class SettingsMenu : Menu
     }
     private void Start()
     {
-        _toggleDict = new Dictionary<string, Toggle>();
 
         foreach (OptionToggle option in _optionToggles)
         {
-            if (option == null || string.IsNullOrEmpty(option.Name))
-            {
-                Debug.LogWarning("Skipping invalid OptionToggle. Missing name or reference. ");
-                continue;
-            }
-
-            if (option.Toggle == null)
-            {
-                Debug.LogWarning("Skipping invalid OptionToggle named " + option.Name + ". Toggle UI reference missing in settings. ");
-                continue;
-            }
-
-            if (!_toggleDict.ContainsKey(option.Name))
-                _toggleDict.Add(option.Name, option.Toggle);
-            else
-                Debug.LogWarning("Duplicate OptionToggle named " + option.Name + ". Removing. ");
+            option.Init();
         }
 
         Continue();
@@ -160,58 +89,29 @@ public class SettingsMenu : Menu
             _menuCanvas.gameObject.SetActive(false);
     }
 
-    public void ChangeBrightness(float value)
-    {
-        Debug.Log("Attempting brightness change. ");
-        if (_gamma == null || _brightness == null) return;
-
-        float normalized = Mathf.InverseLerp(_brightness.minValue, _brightness.maxValue, value);
-        float final = Mathf.Lerp(_minMaxBrightness.x, _minMaxBrightness.y, normalized);  // clamp between volume gamma's best values
-
-        // gamma from post processing actually maps only the value.w for brightness, between the values of -1 and 1
-
-        Vector4 newGamma = _gamma.gamma.value;
-        newGamma.w = final;
-        _gamma.gamma.Override(newGamma);
-
-        if (_brightnessText != null)
-            _brightnessText.text = FormatShort(final);
-
-        Debug.Log("Changing brightness from value " + value + " to: " + _gamma.gamma.value + ". ");
-    }
-
     public void ChangeVolume(float value)
     {
         if (_volume == null) return;
 
-        AudioListener.volume = LinearToDecibel(GetVolume(value, _volume, _volumeText));
-    }
-    public void ChangeMusicVolume(float value)
-    {
-        if (_musicVolume == null) return;
+        AudioListener.volume = LinearToDecibel(
+            GetVolume(value, _volume, _volumeText, Volume.MASTER.ToName())
+            );
 
-        _masterMixer.SetFloat(
-            MUSIC_VOLUME,
-            LinearToDecibel(GetVolume(value, _musicVolume, _musicVolumeText)));
+        PlayerPrefs.SetFloat(Volume.MASTER.ToName(), _volume.value);
+        PlayerPrefs.Save();
     }
 
-    public void ChangeSFXVolume(float value)
-    {
-        if (_sfxVolume == null) return;
-
-        _masterMixer.SetFloat(
-            SFX_VOLUME,
-            LinearToDecibel(GetVolume(value, _sfxVolume, _sfxVolumeText)));
-    }
-
-    private float GetVolume(float value, Slider slider, TMP_Text text)
+    private float GetVolume(float value, Slider slider, TMP_Text text, string prefsKey)
     {
         float final = _maxVolume * (value - slider.minValue)
             / (slider.maxValue - slider.minValue);
 
         if (text != null)
             text.text = FormatShort(final);
-        
+
+        PlayerPrefs.SetFloat(prefsKey, value);
+        PlayerPrefs.Save();
+
         return final;
     }
 
@@ -227,29 +127,13 @@ public class SettingsMenu : Menu
     public static float DecibelToLinear(float dB) => Mathf.Pow(10f, dB / 20f);
     public static float LinearToDecibel(float linear) => Mathf.Log10(Mathf.Clamp(linear, 0.001f, 1f)) * 20f;
 
-
     public void OnDestroy()
     {
-        _brightness?.onValueChanged.RemoveListener(ChangeBrightness);
         _volume?.onValueChanged.RemoveListener(ChangeVolume);
-        _musicVolume?.onValueChanged.RemoveListener(ChangeMusicVolume);
-        _sfxVolume?.onValueChanged.RemoveListener(ChangeSFXVolume);
-    }
+        
+        _brightness.End();
 
-    public bool CheckToggle(string optionName)
-    {
-        if (_toggleDict.TryGetValue(optionName, out var toggle))
-            return toggle.isOn;
-
-        Debug.LogWarning("No toggle found for " + optionName + ". ");
-        return false;
-    }
-
-    public void SetToggle(string optionName, bool value)
-    {
-        if (_toggleDict.TryGetValue(optionName, out var toggle))
-            toggle.isOn = value;
-        else
-            Debug.LogWarning("No toggle found for " + optionName + ". ");
+        foreach (SoundSlider sound in _soundSliders)
+            sound.End();
     }
 }

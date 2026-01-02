@@ -2,12 +2,12 @@ using MenuSystem.Settings;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class Music : Audio
+public class Environment : Audio
 {
 
     private void Start()
     {
-        ConnectMixer(Volume.MUSIC.ToName());
+        ConnectMixer(Volume.ENVIRONMENT.ToName());
         _audioSource.loop = true;
         _audioSource.Play();
     }
