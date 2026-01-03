@@ -8,9 +8,9 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(CanvasRenderer))]
 public class PointEvents : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler , IPointerClickHandler// Maybe script like button audio that is used like raycasts instead for objects (maybe not needed because sound effect can be used in conjunction with custom interaction scripts to achieve that)
 {
-    [SerializeField] private UnityAction _press;
-    [SerializeField] private UnityAction _hover;
-    [SerializeField] private UnityAction _unHover;
+    [SerializeField] private UnityEvent _press;
+    [SerializeField] private UnityEvent _hover;
+    [SerializeField] private UnityEvent _unHover;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
