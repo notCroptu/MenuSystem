@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [Serializable]
 public class OptionToggle : ISetting
 {
-    [HideInInspector] public string Name { get; private set; }
+    [HideInInspector] [SerializeField] private string Name;
     [field: SerializeField] public OptionSettings Settings { get; private set; }
     [field: SerializeField] public Toggle Toggle { get; private set; }
 
@@ -58,13 +58,11 @@ public class OptionToggle : ISetting
         PlayerPrefs.Save();
     }
 
-#if UNITY_EDITOR
-    private void OnValidate()
+    public void Validate()
     {
         if (Settings == null)
             return;
         
         Name = Settings.name;
     }
-#endif
 }

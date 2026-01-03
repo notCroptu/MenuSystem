@@ -21,7 +21,7 @@ public class SettingsMenu : Menu
     private AudioMixer _masterMixer;
 
     [SerializeField] private SoundSlider[] _soundSliders;
-    
+
     [Header("Option Toggles")]
     [SerializeField] private OptionToggle[] _optionToggles;
 
@@ -136,4 +136,15 @@ public class SettingsMenu : Menu
         foreach (OptionToggle option in _optionToggles)
             option.End();
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        foreach (SoundSlider sound in _soundSliders)
+            sound.Validate();
+
+        foreach (OptionToggle option in _optionToggles)
+            option.Validate();
+    }
+#endif
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 [Serializable]
 public class SoundSlider : ISetting
 {
-    [SerializeField] private string Name;
+    [HideInInspector] [SerializeField] private string Name;
     [SerializeField] private Volume _volumeType;
     [SerializeField] private Slider _slider;
     [SerializeField] private TMP_Text _sliderText;
@@ -65,13 +65,18 @@ public class SoundSlider : ISetting
     public void LoadPref()
     {
         if (_slider == null) return;
-        _slider.value = PlayerPrefs.GetFloat(Name, 1f);
+        _slider.value = PlayerPrefs.GetFloat(_volumeType.ToName(), 1f);
     }
 
     public void SavePref()
     {
         if (_slider == null) return;
-        PlayerPrefs.SetFloat(Name, _slider.value);
+        PlayerPrefs.SetFloat(_volumeType.ToName(), _slider.value);
         PlayerPrefs.Save();
+    }
+
+    public void Validate()
+    {
+        Name = _volumeType.ToName();
     }
 }
