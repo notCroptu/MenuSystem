@@ -1,3 +1,4 @@
+using System.Collections;
 using MenuSystem.Settings;
 using NaughtyAttributes;
 using UnityEngine;
@@ -49,6 +50,19 @@ public class SoundEffect2D : Audio
 
         _audioSource = _soundManager.PlaySound(
             sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)]);
+        StartCoroutine(WaitForDone());
+    }
+
+    private IEnumerator WaitForDone()
+    {
+        YieldInstruction time = new WaitForSeconds(1f);
+
+        while (_audioSource.isPlaying)
+        {
+            yield return time;
+        }
+
+        _audioSource = null;
     }
 
     private SoundEffectData ChooseSoundEffect(string name)
