@@ -1,21 +1,15 @@
 using System.Collections;
-using MenuSystem.Settings;
 using NaughtyAttributes;
 using UnityEngine;
 
-public class SoundEffect2D : Audio
+public class SoundEffect2D : MonoBehaviour
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
     [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
     
     private SoundManager2D _soundManager;
-
-    private void Start()
-    {
-        ConnectMixer(Volume.SFX.ToName());
-        _audioSource.loop = false;
-    }
+    private AudioSource _audioSource;
 
     public void Play(string soundEffectName)
     {
