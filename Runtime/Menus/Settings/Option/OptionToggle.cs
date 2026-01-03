@@ -6,6 +6,7 @@ using UnityEngine.UI;
 [Serializable]
 public class OptionToggle : ISetting
 {
+    [HideInInspector] public string Name { get; private set; }
     [field: SerializeField] public OptionSettings Settings { get; private set; }
     [field: SerializeField] public Toggle Toggle { get; private set; }
 
@@ -26,26 +27,44 @@ public class OptionToggle : ISetting
             Toggle.onValueChanged.AddListener(ToggleSettings);
     }
 
+    public void End()
+    {
+        Toggle?.onValueChanged.RemoveListener(ToggleSettings);
+    }
+
     public void ToggleSettings(bool value)
     {
         if (Settings == null)
-        {
-            Debug.LogWarning("An option toggle in settings menu has no settings object reference. ");
             return;
-        }
 
         Settings.Toggle();
         SavePref();
     }
-    
+
     public void LoadPref()
     {
-        Toggle.isOn = PlayerPrefs.GetInt(Settings.Name, 0) == 1;
+        if (Settings == null || Toggle == null)
+            return;
+        
+        Toggle.isOn = PlayerPrefs.GetInt(Settings.name, 0) == 1;
     }
 
     public void SavePref()
     {
-        PlayerPrefs.SetInt(Settings.Name, Toggle.isOn ? 1 : 0);
+        if (Settings == null || Toggle == null)
+            return;
+        
+        PlayerPrefs.SetInt(Settings.name, Toggle.isOn ? 1 : 0);
         PlayerPrefs.Save();
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (Settings == null)
+            return;
+        
+        Name = Settings.name;
+    }
+#endif
 }

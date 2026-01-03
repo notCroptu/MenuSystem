@@ -51,6 +51,9 @@ public class SettingsMenu : Menu
         foreach (SoundSlider sound in _soundSliders)
             sound.Init(_masterMixer, _maxVolume);
 
+        foreach (OptionToggle option in _optionToggles)
+            option.Init();
+
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -66,12 +69,6 @@ public class SettingsMenu : Menu
     }
     private void Start()
     {
-
-        foreach (OptionToggle option in _optionToggles)
-        {
-            option.Init();
-        }
-
         Continue();
     }
 
@@ -130,10 +127,13 @@ public class SettingsMenu : Menu
     public void OnDestroy()
     {
         _volume?.onValueChanged.RemoveListener(ChangeVolume);
-        
+
         _brightness.End();
 
         foreach (SoundSlider sound in _soundSliders)
             sound.End();
+
+        foreach (OptionToggle option in _optionToggles)
+            option.End();
     }
 }
