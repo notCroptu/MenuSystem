@@ -1,30 +1,20 @@
+using MenuSystem.Settings;
 using NaughtyAttributes;
 using UnityEngine;
 
-public class SoundEffect2D : MonoBehaviour
+public class SoundEffect2D : Audio
 {
-    [SerializeField] private AudioClip _audioClip;
-    private SoundManager2D _soundManager;
-    private AudioSource _audioSource;
-
-    public void Play()
-    {
-        if (_soundManager == null)
-            _soundManager = FindFirstObjectByType<SoundManager2D>();
-
-        if (_soundManager == null)
-        {
-            Debug.Log("Couldn't find sound manager. ");
-            return;
-        }
-
-        _soundManager.PlaySound(_audioClip);
-    }
-
-
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
     [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
+    
+    private SoundManager2D _soundManager;
+
+    private void Start()
+    {
+        ConnectMixer(Volume.SFX.ToName());
+        _audioSource.loop = false;
+    }
 
     public void Play(string soundEffectName)
     {
@@ -39,7 +29,7 @@ public class SoundEffect2D : MonoBehaviour
             Debug.Log("Couldn't find sound manager. ");
             return;
         }
-        
+
         if (_audioSource != null && _waitForCompletion && _audioSource.isPlaying)
         {
             if (_toggleAudio && _audioSource.isPlaying)
@@ -57,7 +47,8 @@ public class SoundEffect2D : MonoBehaviour
         if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
             return;
 
-        _audioSource = _soundManager.PlaySound(_audioClip);
+        _audioSource = _soundManager.PlaySound(
+            sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)]);
     }
 
     private SoundEffectData ChooseSoundEffect(string name)
