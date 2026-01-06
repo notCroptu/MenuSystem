@@ -6,7 +6,7 @@ AudioMixerController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MasterMixer
+  m_Name: MasterVolume
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300002}
   m_Snapshots:
@@ -18,6 +18,8 @@ AudioMixerController:
   m_ExposedParameters:
   - guid: 630c3281221f2b5449e28bc519eacef8
     name: EnvironmentVolume
+  - guid: 71e8921a0e3435d40bb60a8fb1ab4785
+    name: MasterVolume
   - guid: 6cecc86f15a75424eb74c0d52049241c
     name: MusicVolume
   - guid: 59b89cdd4ebc3054fa8286536562c17c

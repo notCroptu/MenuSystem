@@ -14,8 +14,6 @@ public class SettingsMenu : Menu
     [SerializeField] private BrightnessSlider _brightness;
 
     [Header("General Volume")]
-    [SerializeField] private Slider _volume;
-    [SerializeField] private TMP_Text _volumeText;
     [SerializeField] private float _maxVolume = 1f;
 
     [SerializeField] private AudioMixer _masterMixer;
@@ -29,25 +27,8 @@ public class SettingsMenu : Menu
 
     // TODO: mouse sensitivity
 
-    private void Awake()
-    {
-        if (_masterMixer == null)
-        {
-            Debug.LogWarning("Master mixer is not loaded " + Volume.MASTER.ToName() + " in Resources. ");
-            return;
-        }
-    }
-
     private void OnEnable()
     {
-        if (_volume != null)
-        {
-            _volume.onValueChanged.AddListener(ChangeVolume);
-            _volume.value = PlayerPrefs.GetFloat(Volume.MASTER.ToName(), _volume.maxValue * AudioListener.volume / _maxVolume);
-        }
-        else
-            Debug.LogWarning(name + " post process slider not assigned.");
-
         _brightness.Init();
 
         foreach (SoundSlider sound in _soundSliders)
@@ -88,18 +69,6 @@ public class SettingsMenu : Menu
             _menuCanvas.gameObject.SetActive(false);
     }
 
-    public void ChangeVolume(float value)
-    {
-        if (_volume == null) return;
-
-        AudioListener.volume = LinearToDecibel(
-            GetVolume(value, _volume, _volumeText, Volume.MASTER.ToName())
-            );
-
-        PlayerPrefs.SetFloat(Volume.MASTER.ToName(), _volume.value);
-        PlayerPrefs.Save();
-    }
-
     private float GetVolume(float value, Slider slider, TMP_Text text, string prefsKey)
     {
         float final = _maxVolume * (value - slider.minValue)
@@ -128,8 +97,6 @@ public class SettingsMenu : Menu
 
     public void OnDestroy()
     {
-        _volume?.onValueChanged.RemoveListener(ChangeVolume);
-
         _brightness.End();
 
         foreach (SoundSlider sound in _soundSliders)

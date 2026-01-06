@@ -13,7 +13,7 @@ namespace MenuSystem.Settings
         {
             return type switch
             {
-                Volume.MASTER => "MasterMixer",
+                Volume.MASTER => "MasterVolume",
                 Volume.MUSIC => "MusicVolume",
                 Volume.ENVIRONMENT => "EnvironmentVolume",
                 Volume.SFX => "SFXVolume",

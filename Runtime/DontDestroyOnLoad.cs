@@ -33,6 +33,7 @@ public class DontDestroyOnLoad : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        Instances.Clear();
+        if (Instances != null)
+            Instances.Clear();
     }
 }

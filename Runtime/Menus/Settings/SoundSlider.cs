@@ -13,6 +13,7 @@ public class SoundSlider : ISetting
     [SerializeField] private Slider _slider;
     [SerializeField] private TMP_Text _sliderText;
 
+    [Header("MasterVolume: MusicVolume, EnvironmentVolume, SFXVolume")]
     private AudioMixer _masterMixer;
     private float _maxVolume;
 
