@@ -18,7 +18,7 @@ public class SettingsMenu : Menu
     [SerializeField] private TMP_Text _volumeText;
     [SerializeField] private float _maxVolume = 1f;
 
-    private AudioMixer _masterMixer;
+    [SerializeField] private AudioMixer _masterMixer;
 
     [SerializeField] private SoundSlider[] _soundSliders;
 
@@ -31,9 +31,11 @@ public class SettingsMenu : Menu
 
     private void Awake()
     {
-        _masterMixer = Resources.Load<AudioMixer>(Volume.MASTER.ToName());
         if (_masterMixer == null)
-            Debug.LogWarning("Could not find " + Volume.MASTER.ToName() + " in Resources. ");
+        {
+            Debug.LogWarning("Master mixer is not loaded " + Volume.MASTER.ToName() + " in Resources. ");
+            return;
+        }
     }
 
     private void OnEnable()
