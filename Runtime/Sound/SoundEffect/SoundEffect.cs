@@ -14,12 +14,32 @@ public class SoundEffect : Audio
         ConnectMixer(Volume.SFX.ToName());
         _audioSource.loop = false;
     }
+    
+    public void PlaySO(SoundEffectData sfx)
+    {
+        if (_soundEffects.Length <= 0)
+            return;
+        
+        if (_waitForCompletion && _audioSource.isPlaying)
+        {
+            if (_toggleAudio && _audioSource.isPlaying)
+                _audioSource.Stop();
+            return;
+        }
+
+        if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
+            return;
+
+        _audioSource.Stop();
+        _audioSource.clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
+        _audioSource.Play();
+    }
 
     public void Play(string soundEffectName)
     {
         if (_soundEffects.Length <= 0)
             return;
-        
+
         if (_waitForCompletion && _audioSource.isPlaying)
         {
             if (_toggleAudio && _audioSource.isPlaying)

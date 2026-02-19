@@ -1,9 +1,9 @@
-using System;
 using UnityEngine;
 
-[Serializable]
-public class SoundEffectData
+[CreateAssetMenu(fileName = "SoundEffectData", menuName = "Scriptable Objects//Sound Effect Data")]
+public class SoundEffectData : ScriptableObject
 {
-    [field:SerializeField] public string Name { get; private set;  }
-    [field:SerializeField] public AudioClip[] PossibleClips  { get; private set;  }
+    public string Name => this.name;
+
+    [field: SerializeField] public AudioClip[] PossibleClips { get; private set; }
 }
