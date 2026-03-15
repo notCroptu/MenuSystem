@@ -13,8 +13,9 @@ public class SceneLoader : MonoBehaviour
     private const string _loadScene = "LoadScene";
     public static string SceneToLoad { get; private set; }
 
-    [SerializeField] private float prePostWaitTime = 0.5f;
-    [SerializeField] private float minLoadTime = 1;
+    [SerializeField][Min(0f)]  private float prePostWaitTime = 0.5f;
+    [SerializeField][Min(0f)] private float minLoadTime = 1;
+    [SerializeField][Range(0f, 0.9f)] private float _realLoadingOnBar = 0.8f;
     [SerializeField] private Slider _loadSlider;
     [SerializeField] private TMP_Text _sceneName;
 
@@ -100,7 +101,7 @@ public class SceneLoader : MonoBehaviour
             // this line remaps 0-0.9 (AsyncOperation.progress returns a value in this range) into a value between 0-1
             progress = Mathf.InverseLerp(0, 0.9f, op.progress);
             if (_loadSlider != null)
-                _loadSlider.value = Mathf.Lerp(_loadSlider.minValue, _loadSlider.maxValue * 0.8f, progress);
+                _loadSlider.value = Mathf.Lerp(_loadSlider.minValue, _loadSlider.maxValue * _realLoadingOnBar, progress);
 
             if (progress >= 1)
             {
@@ -128,7 +129,7 @@ public class SceneLoader : MonoBehaviour
             float finalProgress = Mathf.Clamp01(timer / leftTime);
 
             if (_loadSlider != null)
-                _loadSlider.value = Mathf.Lerp(_loadSlider.maxValue * 0.8f, _loadSlider.maxValue, finalProgress);
+                _loadSlider.value = Mathf.Lerp(_loadSlider.maxValue * _realLoadingOnBar, _loadSlider.maxValue, finalProgress);
             // Debug.Log("timer? " + timer);
             yield return null;
         }
