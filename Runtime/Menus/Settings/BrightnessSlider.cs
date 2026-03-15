@@ -10,10 +10,14 @@ using UnityEngine.UI;
 public class BrightnessSlider : ISetting
 {
     [SerializeField] private Slider _slider;
-    [SerializeField] private TMP_Text _sliderText;
     [SerializeField] private Volume _postProcessWithGamma;
     [SerializeField][MinMaxSlider(-1f, 1f)] private Vector2 _minMaxBrightness = new(-0.5f, 0.5f);
     private LiftGammaGain _gamma;
+
+    [BoxGroup("Slider Text")]
+    [SerializeField] private TMP_Text _sliderText;
+    [BoxGroup("Slider Text")]
+    [SerializeField] private bool _percentText = false;
 
     public void Init()
     {
@@ -59,7 +63,17 @@ public class BrightnessSlider : ISetting
         _gamma.gamma.Override(newGamma);
 
         if (_sliderText != null)
-            _sliderText.text = SettingsMenu.FormatShort(final);
+        {
+            if (_percentText)
+            {
+                float percent = Mathf.InverseLerp(_slider.minValue, _slider.maxValue, value) * 100f;
+                _sliderText.text = Mathf.RoundToInt(percent) + "%";
+            }
+            else
+            {
+                _sliderText.text = SettingsMenu.FormatShort(final);
+            }
+        }
 
         Debug.Log("Changing brightness from value " + value + " to: " + _gamma.gamma.value + ". ");
     }

@@ -1,5 +1,6 @@
 using System;
 using MenuSystem.Settings;
+using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -11,7 +12,11 @@ public class SoundSlider : ISetting
     [HideInInspector] [SerializeField] private string Name;
     [SerializeField] private Volume _volumeType;
     [SerializeField] private Slider _slider;
+
+    [BoxGroup("Slider Text")]
     [SerializeField] private TMP_Text _sliderText;
+    [BoxGroup("Slider Text")]
+    [SerializeField] private bool _percentText = false;
 
     [Header("MasterVolume: MusicVolume, EnvironmentVolume, SFXVolume")]
     private AudioMixer _masterMixer;
@@ -55,7 +60,17 @@ public class SoundSlider : ISetting
             / (slider.maxValue - slider.minValue);
 
         if (text != null)
-            text.text = SettingsMenu.FormatShort(final);
+        {
+            if (_percentText)
+            {
+                float percent = Mathf.InverseLerp(slider.minValue, slider.maxValue, value) * 100f;
+                text.text = Mathf.RoundToInt(percent) + "%";
+            }
+            else
+            {
+                text.text = SettingsMenu.FormatShort(final);
+            }
+        }
 
         PlayerPrefs.SetFloat(prefsKey, value);
         PlayerPrefs.Save();
