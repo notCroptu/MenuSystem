@@ -11,7 +11,7 @@ public class BrightnessSlider : ISetting
 {
     [SerializeField] private Slider _slider;
     [SerializeField] private Volume _postProcessWithGamma;
-    [SerializeField][MinMaxSlider(-1f, 1f)] private Vector2 _minMaxBrightness = new(-0.5f, 0.5f);
+    [SerializeField][MinMaxSlider(-2f, 2f)] private Vector2 _minMaxBrightness = new(-0.5f, 0.5f);
     private LiftGammaGain _gamma;
 
     [BoxGroup("Slider Text")]
