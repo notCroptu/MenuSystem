@@ -10,31 +10,11 @@ public class SoundManager2D : Audio
     [SerializeField] private List<PooledAudioSource> _uiSources;
     [SerializeField] private AudioMixerGroup _audioMixer;
 
-    private void Awake()
-    {
-        foreach (PooledAudioSource source in _gameplaySources)
-            ConfigureSource(source.Source, true);
-        foreach (PooledAudioSource source in _uiSources)
-            ConfigureSource(source.Source, false);
-    }
-
-    private void Start()
-    {
-        foreach (PooledAudioSource source in _gameplaySources)
-            SetupSource(source.Source);
-        foreach (PooledAudioSource source in _uiSources)
-            SetupSource(source.Source);
-    }
-    
-    private void SetupSource(AudioSource source)
+    private void ConfigureSource(AudioSource source, bool timeScaled = true)
     {
         ConnectMixer(Volume.SFX.ToName(), source);
         source.loop = false;
         source.spatialBlend = 0f;
-    }
-
-    private void ConfigureSource(AudioSource source, bool timeScaled = true)
-    {
         source.playOnAwake = false;
         source.outputAudioMixerGroup = _audioMixer;
         source.pitch = timeScaled ? Mathf.Clamp(Time.timeScale, 0f, 1f) : 1f;
