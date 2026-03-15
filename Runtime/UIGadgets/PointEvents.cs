@@ -28,8 +28,6 @@ public class PointerEvents : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (assignIfButtonCantClick != null && !assignIfButtonCantClick.interactable) return;
         if (assignIfToggleCantClick != null && !assignIfToggleCantClick.interactable) return;
 
-        Debug.Log("Hovered played sound from: " + name + " " + transform.parent.name);
-
         onEnter?.Invoke();
     }
 
