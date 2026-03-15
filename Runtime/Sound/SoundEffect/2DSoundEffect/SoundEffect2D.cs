@@ -6,6 +6,7 @@ public class SoundEffect2D : MonoBehaviour
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
+    [SerializeField] private bool _StopWithPaused = true;
     [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
     
     private SoundManager2D _soundManager;
@@ -41,21 +42,17 @@ public class SoundEffect2D : MonoBehaviour
 
         if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
             return;
+            
+        AudioClip clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
 
-        _audioSource = _soundManager.PlaySound(
-            sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)]);
-        StartCoroutine(WaitForDone());
+        if (_StopWithPaused)
+            _audioSource = _soundManager.PlayGameplaySound(clip, this);
+        else
+            _audioSource = _soundManager.PlayUISound(clip, this);
     }
 
-    private IEnumerator WaitForDone()
+    public void DisownSource()
     {
-        YieldInstruction time = new WaitForSeconds(1f);
-
-        while (_audioSource.isPlaying)
-        {
-            yield return time;
-        }
-
         _audioSource = null;
     }
 

@@ -8,9 +8,15 @@ public class PauseMenu : Menu
     [InfoBox("The pause game object must not be the same as the pause script's. Should be one game object above in the hierarchy. \n Pause menu needs to be contained in a DDOL object (don't destroy on load (new scene) ).")]
 
     [Header("Pause")]
-    [Scene][SerializeField] private string _mainMenuScene;
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
     [SerializeField] private KeyCode _pauseToggleKey = KeyCode.Escape;
+    [SerializeField] private GameObject _confirmationPopUp;
+
+    [Tooltip("Use for deactivating menus on e.g. esc that can be access anywhere in game. ")]
+    public UnityEvent onPauseKey;
+    [Tooltip("Use for deactivating menus on e.g. esc that can be access only outside the main menu. ")]
+    public UnityEvent onPauseToggle;
+
     private float _previousTimeScale;
 
     // It's to check if the game is paused to stop other behaviors, mostly stopping the player from being able to use inputs and enumerators (they continue running despite of time scale changes.)
@@ -44,8 +50,21 @@ public class PauseMenu : Menu
         if (_menuCanvas == null)
             return;
 
-        if (SceneManager.GetActiveScene().name != _mainMenuScene && Input.GetKeyDown(_pauseToggleKey)) // the fact it uses get key down is not very mobile friendly, i might wanna add functionality later
+        if (!MenuData.HasInstance) return;
+
+        if (Input.GetKeyDown(_pauseToggleKey)) // the fact it uses get key down is not very mobile friendly, i might wanna add functionality later
         {
+            onPauseKey?.Invoke();
+
+        if (MenuData.HasInstance && MenuData.Instance.SettingsMenu != null)
+            MenuData.Instance.SettingsMenu.Continue();
+        else
+            Debug.LogWarning(name + " SettingsMenu reference missing in PauseMenu.");
+
+            if (SceneManager.GetActiveScene().name == MenuData.Instance.MainScene) return;
+
+            onPauseToggle?.Invoke();
+
             if (_menuCanvas.gameObject.activeSelf) // checking is pause object is active acts like a toggle.
                 Continue();
             else
@@ -73,8 +92,9 @@ public class PauseMenu : Menu
 
         DestroyDDOLs(); // remove DDOLs specifc to game (excludes own)
 
+        if (!MenuData.HasInstance) return;
         Debug.Log("loading main");
-        SceneLoader.Load(_mainMenuScene);
+        SceneLoader.Load(MenuData.Instance.MainScene);
     }
 
     public void OpenPause()
@@ -99,12 +119,7 @@ public class PauseMenu : Menu
     /// This button will resume the game from where the player left off.
     /// </summary>
     public override void Continue()
-    {
-        if (_settings != null)
-            _settings.Continue();
-        else
-            Debug.LogWarning(name + " SettingsMenu reference missing in PauseMenu.");
-        
+    {   
         if (_menuCanvas != null)
             _menuCanvas.gameObject.SetActive(false);
 

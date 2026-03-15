@@ -11,13 +11,12 @@ public class SoundMixerSlider : MonoBehaviour
     private void Awake()
     {
         float savedValue = PlayerPrefs.GetFloat(prefsKey, 1f);
-
-        slider.value = savedValue;
         SetVolume(savedValue);
 
         slider.minValue = 0f;
         slider.maxValue = 1f;
 
+        slider.value = savedValue;
         slider.onValueChanged.AddListener(SetVolume);
     }
 

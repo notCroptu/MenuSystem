@@ -1,29 +1,43 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
-/// <summary>
-/// Component must be in same game object as ui object to use
-/// </summary>
-[RequireComponent(typeof(CanvasRenderer))]
-public class PointEvents : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler , IPointerClickHandler// Maybe script like button audio that is used like raycasts instead for objects (maybe not needed because sound effect can be used in conjunction with custom interaction scripts to achieve that)
+public class PointerEvents : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [SerializeField] private UnityEvent _press;
-    [SerializeField] private UnityEvent _hover;
-    [SerializeField] private UnityEvent _unHover;
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        _hover?.Invoke();
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        _unHover?.Invoke();
-    }
+    [SerializeField] private Button assignIfButtonCantClick;
+    [SerializeField] private Toggle assignIfToggleCantClick;
+    public UnityEvent onEnter;
+    public UnityEvent onClick;
+    public UnityEvent onExit;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        _press?.Invoke();
+        if (assignIfButtonCantClick != null && !assignIfButtonCantClick.interactable) return;
+        if (assignIfToggleCantClick != null && !assignIfToggleCantClick.interactable) return;
+        onClick?.Invoke();
+
+        if (assignIfButtonCantClick != null)
+            assignIfButtonCantClick.onClick.Invoke();
+        if (assignIfToggleCantClick != null)
+            assignIfToggleCantClick.onValueChanged.Invoke(assignIfToggleCantClick.isOn);
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (assignIfButtonCantClick != null && !assignIfButtonCantClick.interactable) return;
+        if (assignIfToggleCantClick != null && !assignIfToggleCantClick.interactable) return;
+
+        Debug.Log("Hovered played sound from: " + name + " " + transform.parent.name);
+
+        onEnter?.Invoke();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (assignIfButtonCantClick != null && !assignIfButtonCantClick.interactable) return;
+        if (assignIfToggleCantClick != null && !assignIfToggleCantClick.interactable) return;
+
+        onExit?.Invoke();
+    }
 }

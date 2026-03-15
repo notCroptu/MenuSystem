@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class Menu : MonoBehaviour
@@ -5,9 +6,6 @@ public abstract class Menu : MonoBehaviour
     [Header("Menu")]
     [SerializeField] protected Canvas _menuCanvas;
     [SerializeField] protected float _runtimePlaneDistance = 1f;
-    [SerializeField] protected bool _overrideMode = true;
-
-    protected SettingsMenu _settings;
 
     private void Awake()
     {
@@ -19,11 +17,6 @@ public abstract class Menu : MonoBehaviour
         }
 
         UpdateCamera();
-
-        _settings = FindFirstObjectByType<SettingsMenu>();
-
-        if (_settings == null)
-            Debug.LogWarning(name + " could not find SettingsMenu in scene.");
     }
 
     private void OnEnable()
@@ -38,7 +31,7 @@ public abstract class Menu : MonoBehaviour
 
     private void UpdateCamera()
     {
-        if (!_overrideMode) return;
+        if (!MenuData.HasInstance || !MenuData.Instance.OverrideMode) return;
         if (_menuCanvas == null) return;
 
         if (ActiveUICam.ActiveUICamera != null) // if an active UI cam exists, then set it as the focus, with screen space as camera so the ui receives post processing
@@ -71,22 +64,23 @@ public abstract class Menu : MonoBehaviour
     /// </summary>
     public void OpenSettings()
     {
-        if (_settings == null)
-        {
-            _settings = FindFirstObjectByType<SettingsMenu>();
-            if (_settings == null)
-            {
-                Debug.LogWarning(name + " could not open SettingsMenu no instance found.");
-                return;
-            }
-        }
+        if (!MenuData.HasInstance) return;
 
-        _settings.TurnOnSettings();
+        MenuData.Instance.OpenSettings();
     }
 
     public abstract void Continue();
+
+    private Coroutine _quit;
     public virtual void Quit()
     {
+        if (_quit == null)
+            _quit = StartCoroutine(QuitCoroutine());
+    }
+
+    private IEnumerator QuitCoroutine()
+    {
+        yield return new WaitForSeconds(5f);
         DestroyDDOLs();
         Application.Quit();
     }

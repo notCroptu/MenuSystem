@@ -1,11 +1,7 @@
-using NaughtyAttributes;
 using UnityEngine;
 
 public class MainMenu : Menu
 {
-    [Header("Main")]
-    [Scene][SerializeField] private string _gameScene;
-
     /// <summary>
     /// Loads the previous game files and starts the game off from where the player left off.
     /// </summary>
@@ -27,13 +23,15 @@ public class MainMenu : Menu
     /// </summary>
     public void NewGame()
     {
-        if (string.IsNullOrEmpty(_gameScene))
+        if (!MenuData.HasInstance) return;
+
+        if (string.IsNullOrEmpty(MenuData.Instance.MainScene))
         {
-            Debug.LogWarning(name + " _game scene not assigned in MainMenu.");
+            Debug.LogWarning(name + " _game scene not assigned in MenuData.");
             return;
         }
 
 
-        SceneLoader.Load(_gameScene);
+        SceneLoader.Load(MenuData.Instance.MainScene);
     }
 }

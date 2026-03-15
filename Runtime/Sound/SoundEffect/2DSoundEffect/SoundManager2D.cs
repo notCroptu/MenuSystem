@@ -6,14 +6,26 @@ using UnityEngine.Audio;
 [RequireComponent(typeof(AudioSource))]
 public class SoundManager2D : Audio
 {
-    [SerializeField] private List<AudioSource> _audioSources;
+    [SerializeField] private List<PooledAudioSource> _gameplaySources;
+    [SerializeField] private List<PooledAudioSource> _uiSources;
     [SerializeField] private AudioMixerGroup _audioMixer;
+
+    private void Awake()
+    {
+        foreach (PooledAudioSource source in _gameplaySources)
+            ConfigureSource(source.Source, true);
+        foreach (PooledAudioSource source in _uiSources)
+            ConfigureSource(source.Source, false);
+    }
 
     private void Start()
     {
-        SetupSource(_audioSource);
+        foreach (PooledAudioSource source in _gameplaySources)
+            SetupSource(source.Source);
+        foreach (PooledAudioSource source in _uiSources)
+            SetupSource(source.Source);
     }
-
+    
     private void SetupSource(AudioSource source)
     {
         ConnectMixer(Volume.SFX.ToName(), source);
@@ -21,32 +33,55 @@ public class SoundManager2D : Audio
         source.spatialBlend = 0f;
     }
 
-    private void Awake()
+    private void ConfigureSource(AudioSource source, bool timeScaled = true)
     {
-        foreach (AudioSource source in _audioSources)
+        source.playOnAwake = false;
+        source.outputAudioMixerGroup = _audioMixer;
+        source.pitch = timeScaled ? Mathf.Clamp(Time.timeScale, 0f, 1f) : 1f;
+    }
+
+    private void Update()
+    {
+        float scaledPitch = Mathf.Clamp(Time.timeScale, 0f, 1f);
+
+        foreach (PooledAudioSource source in _gameplaySources)
         {
-            source.playOnAwake = false;
-            source.outputAudioMixerGroup = _audioMixer;
+            if (source != null)
+                source.Source.pitch = scaledPitch;
         }
     }
 
-    public AudioSource PlaySound(AudioClip clip)
-{
-    foreach (AudioSource source in _audioSources)
+
+    public AudioSource PlayGameplaySound(AudioClip clip, SoundEffect2D sfx2D) => PlaySound(_gameplaySources, clip, sfx2D);
+    public AudioSource PlayUISound(AudioClip clip, SoundEffect2D sfx2D) => PlaySound(_uiSources, clip, sfx2D);
+    private AudioSource PlaySound(List<PooledAudioSource> sources, AudioClip clip, SoundEffect2D sfx2D)
     {
-        if (!source.isPlaying)
+        PooledAudioSource source = null;
+
+        foreach (PooledAudioSource s in sources)
         {
-            source.PlayOneShot(clip);
-            return source;
+            if (!s.InUse)
+            {
+                source = s;
+                if (s.Owner != null)
+                    s.Owner.DisownSource();
+                break;
+            }
         }
-    }
 
-    _audioSources.Add(gameObject.AddComponent<AudioSource>());
-    AudioSource newSource = _audioSources[_audioSources.Count - 1];
+        if (source == null)
+        {
+            source = new PooledAudioSource { Source = gameObject.AddComponent<AudioSource>() };
+            bool isTimeScaled = sources == _gameplaySources;
+            ConfigureSource(source.Source, isTimeScaled);
+            sources.Add(source);
+        }
 
-    SetupSource(newSource);
-
-    newSource.PlayOneShot(clip);
-    return newSource;
+        source.Owner = sfx2D;
+        source.Source.clip = clip;
+        source.Source.pitch = sources == _gameplaySources ? Mathf.Clamp(Time.timeScale, 0f, 1f) : 1f;
+        source.Source.Play();
+        
+        return source.Source;
     }
 }
