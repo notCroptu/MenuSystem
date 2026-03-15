@@ -10,7 +10,6 @@ public class PauseMenu : Menu
     [Header("Pause")]
     [SerializeField][Range(0f, 1f)] private float _timeScaleMultiplier = 0f;
     [SerializeField] private KeyCode _pauseToggleKey = KeyCode.Escape;
-    [SerializeField] private GameObject _confirmationPopUp;
 
     [Tooltip("Use for deactivating menus on e.g. esc that can be access anywhere in game. ")]
     public UnityEvent onPauseKey;
