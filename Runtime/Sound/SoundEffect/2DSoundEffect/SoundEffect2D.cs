@@ -1,4 +1,3 @@
-using System.Collections;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -6,7 +5,7 @@ public class SoundEffect2D : MonoBehaviour
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
-    [SerializeField] private bool _StopWithPaused = true;
+    [SerializeField] private bool _StopWhenPaused = true;
     [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
     
     private SoundManager2D _soundManager;
@@ -45,7 +44,7 @@ public class SoundEffect2D : MonoBehaviour
             
         AudioClip clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
 
-        if (_StopWithPaused)
+        if (_StopWhenPaused)
             _audioSource = _soundManager.PlayGameplaySound(clip, this);
         else
             _audioSource = _soundManager.PlayUISound(clip, this);

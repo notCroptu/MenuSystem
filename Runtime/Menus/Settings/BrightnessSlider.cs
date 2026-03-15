@@ -67,7 +67,7 @@ public class BrightnessSlider : ISetting
             if (_percentText)
             {
                 float percent = Mathf.InverseLerp(_slider.minValue, _slider.maxValue, value) * 100f;
-                _sliderText.text = Mathf.RoundToInt(percent) + "%";
+                _sliderText.text = Mathf.RoundToInt(percent).ToString();
             }
             else
             {

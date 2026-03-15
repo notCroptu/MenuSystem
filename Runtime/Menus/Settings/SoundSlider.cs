@@ -64,7 +64,7 @@ public class SoundSlider : ISetting
             if (_percentText)
             {
                 float percent = Mathf.InverseLerp(slider.minValue, slider.maxValue, value) * 100f;
-                text.text = Mathf.RoundToInt(percent) + "%";
+                text.text = Mathf.RoundToInt(percent).ToString();
             }
             else
             {
