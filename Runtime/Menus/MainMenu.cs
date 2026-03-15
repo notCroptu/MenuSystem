@@ -25,13 +25,13 @@ public class MainMenu : Menu
     {
         if (!MenuData.HasInstance) return;
 
-        if (string.IsNullOrEmpty(MenuData.Instance.MainScene))
+        if (string.IsNullOrEmpty(MenuData.Instance.GameStartScene))
         {
             Debug.LogWarning(name + " _game scene not assigned in MenuData.");
             return;
         }
 
 
-        SceneLoader.Load(MenuData.Instance.MainScene);
+        SceneLoader.Load(MenuData.Instance.GameStartScene);
     }
 }

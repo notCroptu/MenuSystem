@@ -61,7 +61,7 @@ public class PauseMenu : Menu
         else
             Debug.LogWarning(name + " SettingsMenu reference missing in PauseMenu.");
 
-            if (SceneManager.GetActiveScene().name == MenuData.Instance.MainScene) return;
+            if (SceneManager.GetActiveScene().name == MenuData.Instance.MainMenuScene) return;
 
             onPauseToggle?.Invoke();
 
@@ -94,7 +94,7 @@ public class PauseMenu : Menu
 
         if (!MenuData.HasInstance) return;
         Debug.Log("loading main");
-        SceneLoader.Load(MenuData.Instance.MainScene);
+        SceneLoader.Load(MenuData.Instance.MainMenuScene);
     }
 
     public void OpenPause()

@@ -28,8 +28,11 @@ public class MenuData : MonoBehaviour
         }
     }
 
-    [Scene][SerializeField] private string mainScene;
-    public string MainScene => mainScene;
+    [Scene][SerializeField] private string gameStartScene;
+    public string GameStartScene => gameStartScene;
+
+    [Scene][SerializeField] private string mainMenuScene;
+    public string MainMenuScene => mainMenuScene;
 
     [field: SerializeField] public SettingsMenu SettingsMenu { get; private set; }
 
