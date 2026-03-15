@@ -6,9 +6,15 @@ using UnityEngine.Audio;
 [RequireComponent(typeof(AudioSource))]
 public class SoundManager2D : Audio
 {
-    [SerializeField] private List<PooledAudioSource> _gameplaySources;
-    [SerializeField] private List<PooledAudioSource> _uiSources;
     [SerializeField] private AudioMixerGroup _audioMixer;
+    private List<PooledAudioSource> _gameplaySources;
+    private List<PooledAudioSource> _uiSources;
+
+    private void Awake()
+    {
+        _gameplaySources = new List<PooledAudioSource>();
+        _uiSources = new List<PooledAudioSource>();
+    }
 
     private void ConfigureSource(AudioSource source, bool timeScaled = true)
     {
@@ -24,10 +30,13 @@ public class SoundManager2D : Audio
     {
         float scaledPitch = Mathf.Clamp(Time.timeScale, 0f, 1f);
 
-        foreach (PooledAudioSource source in _gameplaySources)
+        if (_gameplaySources != null)
         {
-            if (source != null)
-                source.Source.pitch = scaledPitch;
+            foreach (PooledAudioSource source in _gameplaySources)
+            {
+                if (source != null)
+                    source.Source.pitch = scaledPitch;
+            }
         }
     }
 
