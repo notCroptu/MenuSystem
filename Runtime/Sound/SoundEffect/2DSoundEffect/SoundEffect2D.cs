@@ -11,6 +11,35 @@ public class SoundEffect2D : MonoBehaviour
     private SoundManager2D _soundManager;
     private AudioSource _audioSource;
 
+    public void PlaySO(SoundEffectData sfx)
+    {
+        if (_soundManager == null)
+            _soundManager = FindFirstObjectByType<SoundManager2D>();
+
+        if (_soundManager == null)
+        {
+            Debug.Log("Couldn't find sound manager. ");
+            return;
+        }
+
+        if (_audioSource != null && _waitForCompletion && _audioSource.isPlaying)
+        {
+            if (_toggleAudio && _audioSource.isPlaying)
+                _audioSource.Stop();
+            return;
+        }
+
+        if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
+            return;
+
+        AudioClip clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
+
+        if (_StopWhenPaused)
+            _audioSource = _soundManager.PlayGameplaySound(clip, this);
+        else
+            _audioSource = _soundManager.PlayUISound(clip, this);
+    }
+
     public void Play(string soundEffectName)
     {
         if (_soundEffects.Length <= 0)
@@ -41,7 +70,7 @@ public class SoundEffect2D : MonoBehaviour
 
         if (sfx == null || sfx.PossibleClips == null || sfx.PossibleClips.Length <= 0)
             return;
-            
+
         AudioClip clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
 
         if (_StopWhenPaused)
