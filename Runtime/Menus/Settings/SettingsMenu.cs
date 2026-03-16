@@ -109,11 +109,13 @@ public class SettingsMenu : Menu
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        foreach (SoundSlider sound in _soundSliders)
-            sound.Validate();
+        if (_soundSliders != null)
+            foreach (SoundSlider sound in _soundSliders)
+                sound.Validate();
 
-        foreach (OptionToggle option in _optionToggles)
-            option.Validate();
+        if (_optionToggles != null)
+            foreach (OptionToggle option in _optionToggles)
+                option.Validate();
     }
 #endif
 }

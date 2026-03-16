@@ -8,7 +8,7 @@ public class TMPLinkHandler : MonoBehaviour, IPointerClickHandler, IPointerMoveH
 {
     [SerializeField] private bool _useOwnHoverColor = false;
 
-    [EnableIf(nameof(_useOwnHoverColor))]
+    [ShowIf(nameof(_useOwnHoverColor))]
     [SerializeField] private Color _hoverColor = Color.cyan;
     
     private TMP_Text _textMeshPro;
