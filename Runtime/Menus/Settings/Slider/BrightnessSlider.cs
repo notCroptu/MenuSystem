@@ -16,8 +16,6 @@ public class BrightnessSlider : SettingsSlider
 
     public override void Init()
     {
-        base.Init();
-
         if (_postProcessWithGamma == null)
         {
             Debug.LogWarning("Settings post process reference missing.");
@@ -30,12 +28,14 @@ public class BrightnessSlider : SettingsSlider
             return;
         }
 
-        float normalized = Mathf.InverseLerp(
+        base.Init();
+
+        /*float normalized = Mathf.InverseLerp(
             _minMaxBrightness.x,
             _minMaxBrightness.y,
             _gamma.gamma.value.w);
 
-        _slider.value = Mathf.Lerp(_slider.minValue, _slider.maxValue, normalized);
+        _slider.value = Mathf.Lerp(_slider.minValue, _slider.maxValue, normalized);*/
     }
 
     protected override float Apply(float value)

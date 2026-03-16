@@ -35,8 +35,8 @@ public abstract class SettingsSlider : ISetting
         _slider.onValueChanged.AddListener(OnSliderChanged);
         LoadPref();
 
-        float final = Apply(_slider.value);
-        UpdateText(_slider.value, final);
+        // float final = Apply(_slider.value);
+        // UpdateText(_slider.value, final);
     }
 
     public virtual void End()

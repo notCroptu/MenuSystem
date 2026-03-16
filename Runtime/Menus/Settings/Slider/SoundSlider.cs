@@ -21,10 +21,10 @@ public class SoundSlider : SettingsSlider
 
         base.Init();
 
-        _masterMixer.GetFloat(_volumeType.ToName(), out float dB);
+        /* _masterMixer.GetFloat(_volumeType.ToName(), out float dB);
         _slider.value = PlayerPrefs.GetFloat(
             _volumeType.ToName(),
-            SettingsMenu.DecibelToLinear(dB));
+            SettingsMenu.DecibelToLinear(dB)); */
     }
 
     protected override float Apply(float value)
