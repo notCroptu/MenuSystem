@@ -23,8 +23,6 @@ public class SceneLoader : MonoBehaviour
 
     public static RestoreFlag CurrentRestoreFlag { get; private set; }
 
-    private PauseMenu _pause;
-
     public static void Load(string scene, RestoreFlag restoreFlag = null)
     {
         if (!CanLoadScene(scene))
@@ -60,19 +58,20 @@ public class SceneLoader : MonoBehaviour
         if (_sceneName != null)
             _sceneName.text = "Loading " + SceneToLoad + "...";
 
-        if (_pause == null)
-            _pause = FindFirstObjectByType<PauseMenu>();
-
-        _pause.Count++;
+        if (MenuData.HasInstance)
+            MenuData.Instance.IncreasePause();
+        
+        float prevTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
         // test SceneToLoad ??= "LoadScene";
 
         // wait prePostWaitTime before trying to load
-        yield return new WaitForSeconds(prePostWaitTime);
+        yield return new WaitForSecondsRealtime(prePostWaitTime);
 
         AsyncOperation op;
 
         // unload all scenes except load scene
-        for (int i = 0; i < SceneManager.sceneCount; i++)
+        for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
         {
             Scene scene = SceneManager.GetSceneAt(i);
             if (scene.name != _loadScene)
@@ -87,7 +86,7 @@ public class SceneLoader : MonoBehaviour
         System.GC.Collect();
 
         //  start counting load time
-        float startTime = Time.time;
+        float startTime = Time.unscaledTime;
         // start loading target scene without enabling it
         op = SceneManager.LoadSceneAsync(SceneToLoad, LoadSceneMode.Additive);
         op.allowSceneActivation = false;
@@ -118,14 +117,14 @@ public class SceneLoader : MonoBehaviour
             yield return new WaitUntil(() => CurrentRestoreFlag.IsRestored);
 
         // give it a min loading time, as loading immediately apparently gives a "pop" effect
-        float leftTime = minLoadTime - (Time.time - startTime);
+        float leftTime = minLoadTime - (Time.unscaledTime - startTime);
         leftTime = Mathf.Max(0, leftTime);
 
         float timer = 0;
 
         while (timer < leftTime)
         {
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             float finalProgress = Mathf.Clamp01(timer / leftTime);
 
             if (_loadSlider != null)
@@ -138,14 +137,17 @@ public class SceneLoader : MonoBehaviour
 
         //unload loading scene
         // onFinishLoad.Invoke();
-        yield return new WaitForSeconds(prePostWaitTime);
+        yield return new WaitForSecondsRealtime(prePostWaitTime);
 
         // why does unload scene async's async object not correctly return completed when using it in a yield return or loop?
         SceneManager.UnloadSceneAsync(_loadScene);
 
         IsLoading = false;
         CurrentRestoreFlag = null;
-        _pause.Count--;
+        Time.timeScale = prevTimeScale;
+
+        if (MenuData.HasInstance)
+            MenuData.Instance.IncreasePause();
 
         if (_sceneName != null)
             _sceneName.text = "";

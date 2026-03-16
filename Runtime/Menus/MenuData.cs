@@ -35,6 +35,7 @@ public class MenuData : MonoBehaviour
     public string MainMenuScene => mainMenuScene;
 
     [field: SerializeField] public SettingsMenu SettingsMenu { get; private set; }
+    [field: SerializeField] public PauseMenu PauseMenu { get; private set; }
 
     [field: SerializeField] public bool OverrideMode { get; private set; } = false;
 
@@ -53,6 +54,36 @@ public class MenuData : MonoBehaviour
         Instance = this;
     }
 
+    public void IncreasePause()
+    {
+        if (PauseMenu == null)
+        {
+            PauseMenu = FindFirstObjectByType<PauseMenu>();
+            if (PauseMenu == null)
+            {
+                Debug.LogWarning(name + " could not open PauseMenu no instance found.");
+                return;
+            }
+        }
+
+        PauseMenu.Count++;
+    }
+
+    public void DecreasePause()
+    {
+        if (PauseMenu == null)
+        {
+            PauseMenu = FindFirstObjectByType<PauseMenu>();
+            if (PauseMenu == null)
+            {
+                Debug.LogWarning(name + " could not open PauseMenu no instance found.");
+                return;
+            }
+        }
+
+        PauseMenu.Count--;
+    }
+    
     public void OpenSettings()
     {
         if (SettingsMenu == null)
