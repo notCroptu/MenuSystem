@@ -1,5 +1,7 @@
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
 
 public class PlayerPrefsEditor
 {
@@ -11,3 +13,5 @@ public class PlayerPrefsEditor
         Debug.Log("PlayerPrefs cleared!");
     }
 }
+
+#endif

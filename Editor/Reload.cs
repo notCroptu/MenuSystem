@@ -1,3 +1,5 @@
+
+#if UNITY_EDITOR
 using UnityEditor;
 
 public static class Reload
@@ -9,3 +11,4 @@ public static class Reload
         UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
     }
 }
+#endif

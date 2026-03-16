@@ -1,6 +1,8 @@
-using UnityEditor;
 using UnityEngine;
 using System.Reflection;
+
+#if UNITY_EDITOR
+using UnityEditor;
 
 public static class Validate
 {
@@ -31,3 +33,4 @@ public static class Validate
         Debug.Log($"Manually invoked OnValidate() on {count} ScriptableObjects.");
     }
 }
+#endif
