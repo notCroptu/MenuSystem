@@ -14,12 +14,11 @@ public class SoundEffect : Audio
         ConnectMixer(Volume.SFX.ToName());
         _audioSource.loop = false;
     }
-    
+
     public void PlaySO(SoundEffectData sfx)
     {
-        if (_soundEffects.Length <= 0)
-            return;
-        
+        Debug.Log("TRY Playing SFX named " + sfx.name + " through GO " + gameObject.name);
+
         if (_waitForCompletion && _audioSource.isPlaying)
         {
             if (_toggleAudio && _audioSource.isPlaying)
@@ -33,6 +32,8 @@ public class SoundEffect : Audio
         _audioSource.Stop();
         _audioSource.clip = sfx.PossibleClips[Random.Range(0, sfx.PossibleClips.Length)];
         _audioSource.Play();
+        
+        Debug.Log("Playing SFX named " + sfx.name + " through GO " + gameObject.name);
     }
 
     public void Play(string soundEffectName)
