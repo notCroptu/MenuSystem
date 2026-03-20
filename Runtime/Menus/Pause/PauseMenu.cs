@@ -84,7 +84,7 @@ public class PauseMenu : Menu
         base.Quit();
     }
 
-    public void MainMenu()
+    public void ToMainMenu()
     {
         Save();
         Continue();

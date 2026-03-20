@@ -21,5 +21,12 @@
     "name": "noottu",
     "email": "mariana.martins.info@gmail.com",
     "url": "https://noottu.itch.io/"
-  }
+  },
+"samples": [
+{
+"displayName": "Prefabs",
+"description": "Default menu implementations I use for jams",
+"path": "Samples~/Prefabs"
+}
+]
 }
