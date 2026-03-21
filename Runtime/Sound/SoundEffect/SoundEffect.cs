@@ -7,7 +7,7 @@ public class SoundEffect : AudioBase
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;
-    [SerializeField] [ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
+    [SerializeField][ShowIf("_waitForCompletion")] private bool _toggleAudio = false;
 
     private void Start()
     {
@@ -75,5 +75,16 @@ public class SoundEffect : AudioBase
         if (!_audioSource.isPlaying) return;
 
         _audioSource.Stop();
+    }
+    
+    public static AudioClip RandomAudioFromArray(AudioClip[] array) => array[Random.Range(0, array.Length)];
+    public static void PlaySound(AudioSource source, AudioClip[] array)
+    {
+        if (source != null && array.Length > 0)
+        {
+            source.Stop();
+            source.clip = RandomAudioFromArray(array);
+            source.Play();
+        }
     }
 }
