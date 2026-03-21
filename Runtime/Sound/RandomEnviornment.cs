@@ -2,7 +2,7 @@ using MenuSystem.Settings;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class RandomEnvironment : Audio
+public class RandomEnvironment : AudioBase
 {
     [SerializeField] private AudioClip[] _possibleClips;
     [SerializeField][Min(0f)] private float _waitTime = 30f;

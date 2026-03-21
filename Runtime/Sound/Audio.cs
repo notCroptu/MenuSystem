@@ -2,7 +2,7 @@ using MenuSystem.Settings;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public abstract class Audio : MonoBehaviour
+public abstract class AudioBase : MonoBehaviour
 {
     [SerializeField] protected AudioSource _audioSource;
 

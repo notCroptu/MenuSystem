@@ -3,7 +3,7 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class SoundEffect : Audio
+public class SoundEffect : AudioBase
 {
     [SerializeField] private SoundEffectData[] _soundEffects;
     [SerializeField] private bool _waitForCompletion = false;

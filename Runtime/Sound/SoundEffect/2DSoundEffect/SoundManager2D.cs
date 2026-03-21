@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 [RequireComponent(typeof(AudioSource))]
-public class SoundManager2D : Audio
+public class SoundManager2D : AudioBase
 {
     [SerializeField] private AudioMixerGroup _audioMixer;
     private List<PooledAudioSource> _gameplaySources;

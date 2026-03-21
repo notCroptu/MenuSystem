@@ -2,7 +2,7 @@ using MenuSystem.Settings;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class Music : Audio
+public class Music : AudioBase
 {
 
     private void Start()
