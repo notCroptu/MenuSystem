@@ -16,7 +16,7 @@ public abstract class AudioBase : MonoBehaviour
     {
         if (audioSource != null)
             _audioSource = audioSource;
-        
+
         if (_audioSource.outputAudioMixerGroup == null)
         {
             AudioMixer mixer = Resources.Load<AudioMixer>(Volume.MASTER.ToName());
@@ -32,6 +32,17 @@ public abstract class AudioBase : MonoBehaviour
             {
                 Debug.LogWarning("Could not find " + Volume.MASTER.ToName() + " in Resources. ");
             }
+        }
+    }
+    
+    public static AudioClip RandomAudioFromArray(AudioClip[] array) => array[Random.Range(0, array.Length)];
+    public static void PlaySound(AudioSource source, AudioClip[] array)
+    {
+        if (source != null && array.Length > 0)
+        {
+            source.Stop();
+            source.clip = RandomAudioFromArray(array);
+            source.Play();
         }
     }
 }
