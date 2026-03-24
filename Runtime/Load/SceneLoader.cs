@@ -18,6 +18,7 @@ public class SceneLoader : MonoBehaviour
     [SerializeField][Range(0f, 0.9f)] private float _realLoadingOnBar = 0.8f;
     [SerializeField] private Slider _loadSlider;
     [SerializeField] private TMP_Text _sceneName;
+    [SerializeField] private TMP_Text _loadPercentage;
 
     public static bool IsLoading { get; private set; } = false;
 
@@ -102,6 +103,12 @@ public class SceneLoader : MonoBehaviour
             if (_loadSlider != null)
                 _loadSlider.value = Mathf.Lerp(_loadSlider.minValue, _loadSlider.maxValue * _realLoadingOnBar, progress);
 
+            if (_loadPercentage != null)
+            {
+                int percent = Mathf.RoundToInt(progress * _realLoadingOnBar * 100f);
+                _loadPercentage.text = percent.ToString("00");
+            }
+
             if (progress >= 1)
             {
                 Debug.Log("progress activated");
@@ -130,6 +137,15 @@ public class SceneLoader : MonoBehaviour
             if (_loadSlider != null)
                 _loadSlider.value = Mathf.Lerp(_loadSlider.maxValue * _realLoadingOnBar, _loadSlider.maxValue, finalProgress);
             // Debug.Log("timer? " + timer);
+
+            if (_loadPercentage != null)
+            {
+                int percent = Mathf.RoundToInt(
+                    Mathf.Lerp(_realLoadingOnBar * 100f, 100f, finalProgress)
+                );
+                _loadPercentage.text = percent.ToString("00");
+            }
+
             yield return null;
         }
 
@@ -138,6 +154,9 @@ public class SceneLoader : MonoBehaviour
         //unload loading scene
         // onFinishLoad.Invoke();
         yield return new WaitForSecondsRealtime(prePostWaitTime);
+
+        if (_loadPercentage != null)
+            _loadPercentage.text = "100";
 
         // why does unload scene async's async object not correctly return completed when using it in a yield return or loop?
         SceneManager.UnloadSceneAsync(_loadScene);
