@@ -79,7 +79,7 @@ public abstract class Menu : MonoBehaviour
 
     private IEnumerator QuitCoroutine()
     {
-        yield return new WaitForSecondsRealtime(5f);
+        yield return new WaitForSecondsRealtime(2f);
         DestroyDDOLs();
         Application.Quit();
     }
