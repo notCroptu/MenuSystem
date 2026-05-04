@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1635637812509312298}
   - component: {fileID: 2671238936773386563}
   - component: {fileID: 6822650030706244088}
-  - component: {fileID: 2326955952095538421}
   - component: {fileID: 1149808632943635944}
   - component: {fileID: 6767376113322846828}
   m_Layer: 0
@@ -93,7 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -136,19 +135,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &2326955952095538421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7809780272852684434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14177ac9a747f1499c680837c182cfa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Noottu.MenuSystem.Runtime::UIRaycastAlphaThreshold
-  _alphaThreshold: 0.5
 --- !u!114 &1149808632943635944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0c9f799f9f5ac4fb8831591f918cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Noottu.MenuSystem.Runtime::PointerEvents
-  assignIfButtonCantClick: {fileID: 0}
+  assignIfButtonCantClick: {fileID: 6822650030706244088}
   assignIfToggleCantClick: {fileID: 0}
   onEnter:
     m_PersistentCalls:
