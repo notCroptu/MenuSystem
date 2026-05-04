@@ -33,7 +33,9 @@ public class BrightnessSlider : SettingsSlider
         if (!_defaultProcessWithGamma.TryGet(out _defaultGamma))
         {
             Debug.LogWarning("Couldn't get default Gamma values.");
-
+        }
+        else
+        {   
             _gamma.lift.Override(_defaultGamma.lift.value);
             _gamma.gamma.Override(_defaultGamma.gamma.value);
             _gamma.gain.Override(_defaultGamma.gain.value);
