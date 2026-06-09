@@ -166,7 +166,7 @@ public class SceneLoader : MonoBehaviour
         Time.timeScale = prevTimeScale;
 
         if (MenuData.HasInstance)
-            MenuData.Instance.IncreasePause();
+            MenuData.Instance.DecreasePause();
 
         if (_sceneName != null)
             _sceneName.text = "";
